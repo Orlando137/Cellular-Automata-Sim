@@ -1,5 +1,5 @@
 // --- Constants ---
-const canvas = document.getElementById('antCanvas');
+const canvas = document.getElementById('kansas');
 const ctx = canvas.getContext('2d');
 const cellSize = 2; // Size of each cell in pixels
 
@@ -37,7 +37,7 @@ class Grid {
   draw() {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        ctx.fillStyle = this.getCell(x, y) === 1 ? 'black' : 'white';
+        ctx.fillStyle = this.getCell(x, y) === 1 ? 'white' : 'black';
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
