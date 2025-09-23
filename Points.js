@@ -1,7 +1,7 @@
 // --- Constants ---
 const canvas = document.getElementById('antCanvas');
 const ctx = canvas.getContext('2d');
-const cellSize = 1; // Size of each cell in pixels
+const cellSize = 2; // Size of each cell in pixels
 
 // Set canvas dimensions
 canvas.width = 400;
