@@ -86,6 +86,7 @@ class Ant {
 
 const grid = new Grid(gridSizeX, gridSizeY);
 const ant = new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2));
+ant.draw();
 
 function animate() {
   ant.move();
@@ -114,5 +115,7 @@ reset.onclick = () => {
     ant.y = Math.floor(gridSizeY / 2);
     ant.direction = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ant.draw();
+    requestAnimationFrame
   }
 }
