@@ -1,9 +1,13 @@
 // --- Constants ---
+const start = document.getElementById('start');
+const pause = document.getElementById('pause');
+const reset = document.getElementById('reset');
 const canvas = document.getElementById('kansas');
 const ctx = canvas.getContext('2d');
-const cellSize = 2; // Size of each cell in pixels
+const cellSize = 3; // Size of each cell in pixels
+var started = false;
+var playing = false;
 
-// Set canvas dimensions
 canvas.width = 600;
 canvas.height = 600;
 const gridSizeX = Math.floor(canvas.width / cellSize);
@@ -53,19 +57,16 @@ class Ant {
   }
 
   move() {
-    // Check the color of the current cell
     const cellColor = grid.getCell(this.x, this.y);
 
-    // Turn and flip the cell based on the color
-    if (cellColor === 0) { // White cell
-      this.direction = (this.direction + 1) % 4; // Turn right
-    } else { // Black cell
-      this.direction = (this.direction - 1 + 4) % 4; // Turn left
+    if (cellColor === 0) {
+      this.direction = (this.direction + 1) % 4;
+    } else {
+      this.direction = (this.direction - 1 + 4) % 4;
     }
 
     grid.flipCell(this.x, this.y);
 
-    // Move the ant one step forward
     switch (this.direction) {
       case 0: this.y--; break; // North
       case 1: this.x++; break; // East
@@ -73,34 +74,45 @@ class Ant {
       case 3: this.x--; break; // West
     }
 
-    // Wrap around the edges of the grid
     this.x = (this.x + gridSizeX) % gridSizeX;
     this.y = (this.y + gridSizeY) % gridSizeY;
   }
 
   draw() {
-    // Draw the ant as a small red square
     ctx.fillStyle = 'red';
     ctx.fillRect(this.x * cellSize, this.y * cellSize, cellSize, cellSize);
   }
 }
 
-// --- Main Simulation Loop ---
 const grid = new Grid(gridSizeX, gridSizeY);
 const ant = new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2));
 
 function animate() {
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Update and draw the simulation
   ant.move();
   grid.draw();
   ant.draw();
 
-  // Loop
-  requestAnimationFrame(animate);
+  if (playing)
+    requestAnimationFrame(animate);
 }
 
-// Start the animation
-animate();
+//Control Buttons
+start.onclick = () => {
+    started = true;
+    playing = true;
+    animate();
+}
+
+pause.onclick = () => {playing? playing = false : playing = true; if (playing) animate();};
+
+reset.onclick = () => {
+  if (started) {
+    started = false;
+    playing = false;
+    grid.grid = grid.createGrid();
+    ant.x = Math.floor(gridSizeX / 2);
+    ant.y = Math.floor(gridSizeY / 2);
+    ant.direction = 0;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
