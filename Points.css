@@ -11,10 +11,21 @@ body {
 }
 
 #control {
+    display: flex;
+    flex-direction: column;
     height: 500px;
     width: 300px;
     border: 2px solid #C8C8C8;
     background-color: black;
+    padding: 10px;
+}
+
+.button {
+    padding: 0rem 0.25rem;
+    border: 1px solid #767676;
+    border-radius: 0.25rem;
+    background-color: #ffffff;
+    cursor: pointer;
 }
 
 canvas {
