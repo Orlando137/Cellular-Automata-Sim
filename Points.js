@@ -4,8 +4,8 @@ const ctx = canvas.getContext('2d');
 const cellSize = 2; // Size of each cell in pixels
 
 // Set canvas dimensions
-canvas.width = 400;
-canvas.height = 400;
+canvas.width = 600;
+canvas.height = 600;
 const gridSizeX = Math.floor(canvas.width / cellSize);
 const gridSizeY = Math.floor(canvas.height / cellSize);
 
