@@ -2,6 +2,7 @@
 const start = document.getElementById('start');
 const pause = document.getElementById('pause');
 const reset = document.getElementById('reset');
+const save = document.getElementById('save');
 const canvas = document.getElementById('kansas');
 const ctx = canvas.getContext('2d');
 const cellSize = 3; // Size of each cell in pixels
@@ -118,4 +119,11 @@ reset.onclick = () => {
     ant.draw();
     requestAnimationFrame
   }
+}
+
+save.onclick = () => {
+  const link = document.createElement("a");
+  link.download = "pattern.png";
+  link.href = canvas.toDataURL();
+  link.click();
 }
