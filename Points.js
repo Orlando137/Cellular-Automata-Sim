@@ -69,10 +69,10 @@ class Ant {
     grid.flipCell(this.x, this.y);
 
     switch (this.direction) {
-      case 0: this.y--; break; // North
-      case 1: this.x++; break; // East
-      case 2: this.y++; break; // South
-      case 3: this.x--; break; // West
+      case 0: this.y-=1; break; // North
+      case 1: this.x+=1; break; // East
+      case 2: this.y+=1; break; // South
+      case 3: this.x-=1; break; // West
     }
 
     this.x = (this.x + gridSizeX) % gridSizeX;
