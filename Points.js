@@ -3,11 +3,19 @@ const start = document.getElementById('start');
 const pause = document.getElementById('pause');
 const reset = document.getElementById('reset');
 const save = document.getElementById('save');
+const bAnt = document.getElementById('bAnt');
+const bDirection = document.getElementById('bDirection');
+const bTile = document.getElementById('bTile');
+const bColor = document.getElementById('bColor');
 const canvas = document.getElementById('kansas');
 const ctx = canvas.getContext('2d');
 const cellSize = 3; // Size of each cell in pixels
 var started = false;
 var playing = false;
+var buAnt = false;
+var buDirection = 0; // 0: North, 1: East, 2: South, 3: West
+var buTile = false;
+var buColor = 'white';
 
 canvas.width = 600;
 canvas.height = 600;
@@ -37,6 +45,47 @@ class Grid {
       return this.grid[y][x];
     }
     return null;
+  }
+
+  /**
+   * Map canvas client coordinates (e.g. MouseEvent.clientX/Y) to grid cell indices
+   * and return an object { x, y, value } or null if outside grid.
+   * This accounts for the canvas CSS size vs drawing buffer.
+   */
+  cellAtCanvasPoint(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    // Calculate CSS pixel coordinates relative to canvas
+    const cssX = clientX - rect.left;
+    const cssY = clientY - rect.top;
+
+    // Account for potential scaling between canvas width/height and CSS size
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const canvasX = Math.floor(cssX * scaleX);
+    const canvasY = Math.floor(cssY * scaleY);
+
+    const gridX = Math.floor(canvasX / cellSize);
+    const gridY = Math.floor(canvasY / cellSize);
+
+    if (gridX >= 0 && gridX < this.width && gridY >= 0 && gridY < this.height) {
+      return { x: gridX, y: gridY, value: this.getCell(gridX, gridY) };
+    }
+    return null;
+  }
+
+  /**
+   * Attach a click listener to the canvas that calls `callback(cellInfo, event)`
+   * where cellInfo is { x, y, value } or null when click is outside grid.
+   * Returns a function to remove the listener.
+   */
+  enableClickSelection(callback) {
+    const handler = (ev) => {
+      const cell = this.cellAtCanvasPoint(ev.clientX, ev.clientY);
+      callback(cell, ev);
+    };
+    canvas.addEventListener('click', handler);
+    return () => canvas.removeEventListener('click', handler);
   }
 
   draw() {
@@ -98,7 +147,7 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-//Control Buttons
+// --- Flow Control ---
 start.onclick = () => {
     started = true;
     playing = true;
@@ -127,3 +176,20 @@ save.onclick = () => {
   link.href = canvas.toDataURL();
   link.click();
 }
+
+// --- Build Control ---
+bAnt.onclick = () => {
+  if (!started) {
+
+  }
+}
+
+bDirection.onclick = () => {}
+
+bTile.onclick = () => {
+  if (!started) {
+    
+  }
+}
+
+bColor.onclick = () => {}
