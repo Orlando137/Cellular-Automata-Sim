@@ -1,3 +1,4 @@
+//What's up?
 // --- Constants ---
 const start = document.getElementById('start');
 const pause = document.getElementById('pause');
