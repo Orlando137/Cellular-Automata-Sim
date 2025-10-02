@@ -1,9 +1,8 @@
-//What's up?
 // --- Constants ---
-const start = document.getElementById('start');
-const pause = document.getElementById('pause');
-const reset = document.getElementById('reset');
+const startReset = document.getElementById('start-reset');
+const pausePlay = document.getElementById('pause-play');
 const save = document.getElementById('save');
+const stepCount = document.getElementById('stepCount');
 const bAnt = document.getElementById('bAnt');
 const bDirection = document.getElementById('bDirection');
 const bTile = document.getElementById('bTile');
@@ -13,6 +12,7 @@ const ctx = canvas.getContext('2d');
 const cellSize = 3; // Size of each cell in pixels
 var started = false;
 var playing = false;
+var steps = 0;
 var buAnt = false;
 var buDirection = 0; // 0: North, 1: East, 2: South, 3: West
 var buTile = false;
@@ -143,22 +143,18 @@ function animate() {
   ant.move();
   grid.draw();
   ant.draw();
-
+  steps++;
+  stepCount.textContent = `Steps: ${steps}`;
   if (playing)
     requestAnimationFrame(animate);
 }
 
 // --- Flow Control ---
-start.onclick = () => {
-    started = true;
-    playing = true;
-    animate();
-}
-
-pause.onclick = () => {playing? playing = false : playing = true; if (playing) animate();};
-
-reset.onclick = () => {
+startReset.onclick = () => {
   if (started) {
+    startReset.textContent = 'start';
+    steps = 0;
+    stepCount.textContent = `Steps: ${steps}`;
     started = false;
     playing = false;
     grid.grid = grid.createGrid();
@@ -168,8 +164,27 @@ reset.onclick = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ant.draw();
     requestAnimationFrame
+    pausePlay.classList.add('hidden');
+  } else {
+    startReset.textContent = 'reset';
+    started = true;
+    playing = true;
+    animate();
+    pausePlay.classList.remove('hidden');
+    startReset.classList.add('hidden');
   }
 }
+
+pausePlay.onclick = () => {
+  pausePlay.textContent = playing ? 'play' : 'pause';
+  playing? playing = false : playing = true;
+  if (playing) {
+    animate();
+    startReset.classList.add('hidden');
+  } else {
+    startReset.classList.remove('hidden');
+  }
+};
 
 save.onclick = () => {
   const link = document.createElement("a");
