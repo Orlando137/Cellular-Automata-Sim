@@ -8,7 +8,7 @@ const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
 const canvas = document.getElementById('kansas');
 const ctx = canvas.getContext('2d');
-const cellSize = 3; // Size of each cell in pixels
+const cellSize = 5; // Size of each cell in pixels
 var started = false;
 var playing = false;
 var steps = 0;
@@ -176,6 +176,7 @@ startReset.onclick = () => {
     pausePlay.classList.add('hidden');
   } else {
     startReset.textContent = 'reset';
+    pausePlay.textContent = 'pause';
     started = true;
     playing = true;
     animate();
