@@ -1,11 +1,10 @@
-// --- Constants ---
+// ---  Initial Constants + Variables ---
 const startReset = document.getElementById('start-reset');
 const pausePlay = document.getElementById('pause-play');
 const save = document.getElementById('save');
 const stepCount = document.getElementById('stepCount');
-const bAnt = document.getElementById('bAnt');
+const bAntCell = document.getElementById('bAnt-cell'); // b stands for "in build section"
 const bDirection = document.getElementById('bDirection');
-const bTile = document.getElementById('bTile');
 const bColor = document.getElementById('bColor');
 const canvas = document.getElementById('kansas');
 const ctx = canvas.getContext('2d');
@@ -13,9 +12,9 @@ const cellSize = 3; // Size of each cell in pixels
 var started = false;
 var playing = false;
 var steps = 0;
-var buAnt = false;
+var buAnt = true; // bu satands for "building"
 var buDirection = 0; // 0: North, 1: East, 2: South, 3: West
-var buTile = false;
+var buCell = false;
 var buColor = 'white';
 
 canvas.width = 600;
@@ -59,7 +58,6 @@ class Grid {
     const cssX = clientX - rect.left;
     const cssY = clientY - rect.top;
 
-    // Account for potential scaling between canvas width/height and CSS size
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
@@ -81,12 +79,12 @@ class Grid {
    * Returns a function to remove the listener.
    */
   enableClickSelection(callback) {
-    const handler = (ev) => {
+    const fCell = (ev) => { // f stands for "flip"
       const cell = this.cellAtCanvasPoint(ev.clientX, ev.clientY);
       callback(cell, ev);
     };
-    canvas.addEventListener('click', handler);
-    return () => canvas.removeEventListener('click', handler);
+    canvas.addEventListener('click', fCell);
+    return () => canvas.removeEventListener('click', fCell);
   }
 
   draw() {
@@ -139,6 +137,17 @@ const grid = new Grid(gridSizeX, gridSizeY);
 const ant = new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2));
 ant.draw();
 
+// Enable clicking the canvas to flip the clicked cell's color and redraw.
+// This works whether simulation has started or not.
+grid.enableClickSelection((cell) => {
+  if (!cell) return;
+  if (buCell) {
+    grid.flipCell(cell.x, cell.y);
+    grid.draw();
+    ant.draw();
+  }
+});
+
 function animate() {
   ant.move();
   grid.draw();
@@ -177,7 +186,7 @@ startReset.onclick = () => {
 
 pausePlay.onclick = () => {
   pausePlay.textContent = playing ? 'play' : 'pause';
-  playing? playing = false : playing = true;
+  playing ? playing = false : playing = true;
   if (playing) {
     animate();
     startReset.classList.add('hidden');
@@ -194,17 +203,26 @@ save.onclick = () => {
 }
 
 // --- Build Control ---
-bAnt.onclick = () => {
-  if (!started) {
-
+bAntCell.onclick = () => {
+  buCell ? buCell = false : buCell = true;
+  buAnt ? buAnt = false : buAnt = true;
+  if (buAnt) {
+    bAntCell.textContent = 'ant';
+    bDirection.classList.remove('hidden');
+    bColor.classList.add('hidden');
+  } else {
+    bAntCell.textContent = 'cell';
+    bDirection.classList.add('hidden');
+    bColor.classList.remove('hidden');
   }
 }
 
-bDirection.onclick = () => {}
-
-bTile.onclick = () => {
-  if (!started) {
-    
+bDirection.onclick = () => {
+  switch (buDirection) {
+    case 0: buDirection = 1; bDirection.textContent = 'east'; break;
+    case 1: buDirection = 2; bDirection.textContent = 'south'; break;
+    case 2: buDirection = 3; bDirection.textContent = 'west'; break;
+    case 3: buDirection = 0; bDirection.textContent = 'north'; break;
   }
 }
 
