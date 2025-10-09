@@ -187,11 +187,11 @@ startReset.onclick = () => {
     stepCount.textContent = `Steps: ${steps}`;
     started = false;
     playing = false;
-  grid.grid = grid.createGrid();
-  // Reset ants array to a single ant centered in the grid
-  ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
+    grid.grid = grid.createGrid();
+    // Reset ants array to a single ant centered in the grid
+    ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ants.forEach(a => a.draw());
+    ants.forEach(a => a.draw());
     requestAnimationFrame
     pausePlay.classList.add('hidden');
   } else {
