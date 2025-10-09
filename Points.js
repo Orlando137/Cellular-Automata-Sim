@@ -99,10 +99,10 @@ class Grid {
 
 // --- Ant Class ---
 class Ant {
-  constructor(x, y) {
+  constructor(x, y, d) {
     this.x = x;
     this.y = y;
-    this.direction = 0; // 0: North, 1: East, 2: South, 3: West
+    this.direction = d; // 0: North, 1: East, 2: South, 3: West
   }
 
   move() {
@@ -134,24 +134,45 @@ class Ant {
 }
 
 const grid = new Grid(gridSizeX, gridSizeY);
-const ant = new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2));
-ant.draw();
+let ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
+ants.forEach(a => a.draw());
 
 // Enable clicking the canvas to flip the clicked cell's color and redraw.
 // This works whether simulation has started or not.
 grid.enableClickSelection((cell) => {
   if (!cell) return;
   if (buCell) {
+    // Flip a grid cell when in cell-build mode
     grid.flipCell(cell.x, cell.y);
     grid.draw();
-    ant.draw();
+    // redraw all ants after grid change
+    ants.forEach(a => a.draw());
+  } else {
+    // When not in cell-build mode, if there are any ants on the clicked tile,
+    // remove them. Otherwise, create a new Ant at that location.
+    const beforeCount = ants.length;
+    // Remove ants that sit exactly on the clicked tile
+    ants = ants.filter(a => !(a.x === cell.x && a.y === cell.y));
+    const afterCount = ants.length;
+
+    if (afterCount === beforeCount) {
+      // No ants were removed -> add a new ant at the clicked location
+      const newAnt = new Ant(cell.x, cell.y, buDirection);
+      ants.push(newAnt);
+    }
+
+    // redraw grid and all ants
+    grid.draw();
+    ants.forEach(a => a.draw());
   }
 });
 
 function animate() {
-  ant.move();
+  // Move every ant in the array
+  ants.forEach(a => a.move());
+  // Draw grid then all ants
   grid.draw();
-  ant.draw();
+  ants.forEach(a => a.draw());
   steps++;
   stepCount.textContent = `Steps: ${steps}`;
   if (playing)
@@ -166,12 +187,11 @@ startReset.onclick = () => {
     stepCount.textContent = `Steps: ${steps}`;
     started = false;
     playing = false;
-    grid.grid = grid.createGrid();
-    ant.x = Math.floor(gridSizeX / 2);
-    ant.y = Math.floor(gridSizeY / 2);
-    ant.direction = 0;
+  grid.grid = grid.createGrid();
+  // Reset ants array to a single ant centered in the grid
+  ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ant.draw();
+  ants.forEach(a => a.draw());
     requestAnimationFrame
     pausePlay.classList.add('hidden');
   } else {
