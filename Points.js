@@ -2,6 +2,7 @@
 const startReset = document.getElementById('start-reset');
 const pausePlay = document.getElementById('pause-play');
 const save = document.getElementById('save');
+const step = document.getElementById('step');
 const stepCount = document.getElementById('stepCount');
 const bAntCell = document.getElementById('bAnt-cell'); // b stands for "in build section"
 const bDirection = document.getElementById('bDirection');
@@ -128,7 +129,12 @@ class Ant {
   }
 
   draw() {
-    ctx.fillStyle = 'red';
+    switch (this.direction) {
+      case 0: ctx.fillStyle = 'red'; break; // North
+      case 1: ctx.fillStyle = 'yellow'; break; // East
+      case 2: ctx.fillStyle = 'green'; break; // South
+      case 3: ctx.fillStyle = 'blue'; break; // West
+    }
     ctx.fillRect(this.x * cellSize, this.y * cellSize, cellSize, cellSize);
   }
 }
@@ -215,6 +221,14 @@ pausePlay.onclick = () => {
     startReset.classList.remove('hidden');
   }
 };
+
+step.onclick = () => {
+  ants.forEach(a => a.move());
+  grid.draw();
+  ants.forEach(a => a.draw());
+  steps++;
+  stepCount.textContent = `Steps: ${steps}`;
+}
 
 save.onclick = () => {
   const link = document.createElement("a");
