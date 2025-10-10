@@ -180,7 +180,7 @@ function animate() {
   grid.draw();
   ants.forEach(a => a.draw());
   steps++;
-  stepCount.textContent = `Steps: ${steps}`;
+  stepCount.textContent = `${steps}`;
   if (playing)
     requestAnimationFrame(animate);
 }
@@ -190,7 +190,7 @@ startReset.onclick = () => {
   if (started) {
     startReset.textContent = 'start';
     steps = 0;
-    stepCount.textContent = `Steps: ${steps}`;
+    stepCount.textContent = `${steps}`;
     started = false;
     playing = false;
     grid.grid = grid.createGrid();
@@ -227,7 +227,7 @@ step.onclick = () => {
   grid.draw();
   ants.forEach(a => a.draw());
   steps++;
-  stepCount.textContent = `Steps: ${steps}`;
+  stepCount.textContent = `${steps}`;
 }
 
 save.onclick = () => {
