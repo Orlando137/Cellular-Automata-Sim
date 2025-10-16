@@ -16,7 +16,7 @@ var steps = 0;
 var buAnt = true; // bu satands for "building"
 var buDirection = 0; // 0: North, 1: East, 2: South, 3: West
 var buCell = false;
-var buColor = 'white';
+var buColor = 'rgb(255,255,255)';
 
 canvas.width = 600;
 canvas.height = 600;
@@ -91,7 +91,7 @@ class Grid {
   draw() {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        ctx.fillStyle = this.getCell(x, y) === 1 ? 'white' : 'black';
+        ctx.fillStyle = this.getCell(x, y) === 1 ? 'rgb(255,255,255)' : 'rgb(0,0,0)';
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
@@ -130,10 +130,10 @@ class Ant {
 
   draw() {
     switch (this.direction) {
-      case 0: ctx.fillStyle = 'red'; break; // North
-      case 1: ctx.fillStyle = 'yellow'; break; // East
-      case 2: ctx.fillStyle = 'green'; break; // South
-      case 3: ctx.fillStyle = 'blue'; break; // West
+      case 0: ctx.fillStyle = 'rgb(51, 51, 51)'; break; // North (red)
+      case 1: ctx.fillStyle = 'rgb(102, 102, 102)'; break; // East (yellow)
+      case 2: ctx.fillStyle = 'rgb(153, 153, 153)'; break; // South (green)
+      case 3: ctx.fillStyle = 'rgb(204, 204, 204)'; break; // West (blue)
     }
     ctx.fillRect(this.x * cellSize, this.y * cellSize, cellSize, cellSize);
   }
