@@ -106,28 +106,6 @@ class Ant {
     this.direction = d; // 0: North, 1: East, 2: South, 3: West
   }
 
-  move() {
-    const cellColor = grid.getCell(this.x, this.y);
-
-    if (cellColor === 0) {
-      this.direction = (this.direction + 1) % 4;
-    } else {
-      this.direction = (this.direction - 1 + 4) % 4;
-    }
-
-    grid.flipCell(this.x, this.y);
-
-    switch (this.direction) {
-      case 0: this.y-=1; break; // North
-      case 1: this.x+=1; break; // East
-      case 2: this.y+=1; break; // South
-      case 3: this.x-=1; break; // West
-    }
-
-    this.x = (this.x + gridSizeX) % gridSizeX;
-    this.y = (this.y + gridSizeY) % gridSizeY;
-  }
-
   draw() {
     switch (this.direction) {
       case 0: ctx.fillStyle = 'rgb(51, 51, 51)'; break; // North (red)
@@ -174,13 +152,8 @@ grid.enableClickSelection((cell) => {
 });
 
 function animate() {
-  // Move every ant in the array
-  ants.forEach(a => a.move());
-  // Draw grid then all ants
-  grid.draw();
-  ants.forEach(a => a.draw());
-  steps++;
-  stepCount.textContent = `${steps}`;
+  // Perform one synchronized step for all ants (order-independent)
+  stepOnce();
   if (playing)
     requestAnimationFrame(animate);
 }
@@ -223,7 +196,60 @@ pausePlay.onclick = () => {
 };
 
 step.onclick = () => {
-  ants.forEach(a => a.move());
+  stepOnce();
+}
+
+/**
+ * stepOnce()
+ * Perform one simulation step in an order-independent way:
+ * - Read the current grid state once.
+ * - For each ant, decide its new direction based solely on the current cell value.
+ * - Collect all grid flips that should happen this step (a flip per ant on its current cell).
+ * - Apply all flips to the grid (so flips are effectively atomic for this step).
+ * - After flips are applied, move each ant according to its decided new direction and wrap.
+ */
+function stepOnce() {
+  if (ants.length === 0) return;
+
+  // Snapshot is not a deep copy of the grid array; we only need cell values at ants' positions
+  const decisions = ants.map(a => {
+    const cellColor = grid.getCell(a.x, a.y);
+    // Determine new direction based on current cell color (0: turn right, 1: turn left)
+    const newDir = cellColor === 0 ? (a.direction + 1) % 4 : (a.direction - 1 + 4) % 4;
+    return { ant: a, newDir, x: a.x, y: a.y };
+  });
+
+  // Apply all flips for ants' current cells
+  // Use a Set keyed by "x,y" so multiple ants on same cell flip multiple times (i.e., each ant flips once)
+  const flipCounts = new Map();
+  decisions.forEach(d => {
+    const key = `${d.x},${d.y}`;
+    flipCounts.set(key, (flipCounts.get(key) || 0) + 1);
+  });
+
+  // Now apply flips: an odd count -> flip, even count -> no net change
+  flipCounts.forEach((count, key) => {
+    if (count % 2 === 1) {
+      const [sx, sy] = key.split(',').map(Number);
+      grid.flipCell(sx, sy);
+    }
+  });
+
+  // Finally, update ants' directions and positions based on previously computed newDir
+  decisions.forEach(d => {
+    const a = d.ant;
+    a.direction = d.newDir;
+    switch (a.direction) {
+      case 0: a.y -= 1; break;
+      case 1: a.x += 1; break;
+      case 2: a.y += 1; break;
+      case 3: a.x -= 1; break;
+    }
+    a.x = (a.x + gridSizeX) % gridSizeX;
+    a.y = (a.y + gridSizeY) % gridSizeY;
+  });
+
+  // Draw grid and ants, update step counter
   grid.draw();
   ants.forEach(a => a.draw());
   steps++;
