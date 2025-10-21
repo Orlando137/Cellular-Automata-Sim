@@ -9,7 +9,7 @@ const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
 const canvas = document.getElementById('kansas');
 const ctx = canvas.getContext('2d');
-const cellSize = 5; // Size of each cell in pixels
+const cellSize = 5;
 var started = false;
 var playing = false;
 var steps = 0;
@@ -35,7 +35,7 @@ class Grid {
     return Array(this.height).fill(null).map(() => Array(this.width).fill(0));
   }
 
-  flipCell(x, y) {
+  flipCell(x, y) { // This needs to be changed so that it cycles through multiple colors accoring to the code.
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
       this.grid[y][x] = this.grid[y][x] === 0 ? 1 : 0;
     }
