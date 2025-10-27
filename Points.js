@@ -19,12 +19,7 @@ var steps = 0;
 var buAnt = true;
 var buDirection = 0;
 var buCell = false;
-<<<<<<< HEAD
-var buColor = 1;
-=======
 var buColor = 0;
-
->>>>>>> 2e41dc2f3aa42745db63c7c184157bd624b11849
 
 canvas.width = 600;
 canvas.height = 600;
