@@ -16,7 +16,7 @@ var steps = 0;
 var buAnt = true; // bu satands for "building"
 var buDirection = 0; // 0: North, 1: East, 2: South, 3: West
 var buCell = false;
-var buColor = 'rgb(255,255,255)';
+var buColor = 1;
 
 canvas.width = 600;
 canvas.height = 600;
