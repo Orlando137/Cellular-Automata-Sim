@@ -58,4 +58,9 @@ input {
     border-radius: 0.25rem;
     background-color: #ffffff;
     cursor: text;
+    min-width: 0;
+}
+
+.flex-grow {
+    flex-grow: 1;
 }

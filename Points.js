@@ -4,10 +4,11 @@ const pausePlay = document.getElementById('pause-play');
 const save = document.getElementById('save');
 const step = document.getElementById('step');
 const stepCount = document.getElementById('stepCount');
-const bAntCell = document.getElementById('bAnt-cell');
+const bAutoCell = document.getElementById('bAuto-cell');
 const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
 const canvas = document.getElementById('kansas');
+const graphName = document.getElementById('graph-name');
 const colorCode = document.getElementById('color-code');
 const turnCode = document.getElementById('turn-code');
 const distanceCode = document.getElementById('distance-code');
@@ -16,7 +17,7 @@ const cellSize = 5;
 var started = false;
 var playing = false;
 var steps = 0;
-var buAnt = true;
+var buAuto = true;
 var buDirection = 0;
 var buCell = false;
 var buColor = 0;
@@ -41,16 +42,16 @@ class Grid {
   }
 
 
-  flipCell(x, y) {
+  flipCell(x, y, auto) {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-      switch (this.grid[y][x] = this.grid[y][x]) {
-        case 0: this.grid[y][x] = parseInt(colorCode.value[0]); break;
-        case 1: this.grid[y][x] = parseInt(colorCode.value[1]); break;
-        case 2: this.grid[y][x] = parseInt(colorCode.value[2]); break;
-        case 3: this.grid[y][x] = parseInt(colorCode.value[3]); break;
-        case 4: this.grid[y][x] = parseInt(colorCode.value[4]); break;
-        case 5: this.grid[y][x] = parseInt(colorCode.value[5]); break;
-        case 6: this.grid[y][x] = parseInt(colorCode.value[6]); break;
+      switch (this.grid[y][x]) {
+        case 0: this.grid[y][x] = parseInt(auto.colorCode[0]); break;
+        case 1: this.grid[y][x] = parseInt(auto.colorCode[1]); break;
+        case 2: this.grid[y][x] = parseInt(auto.colorCode[2]); break;
+        case 3: this.grid[y][x] = parseInt(auto.colorCode[3]); break;
+        case 4: this.grid[y][x] = parseInt(auto.colorCode[4]); break;
+        case 5: this.grid[y][x] = parseInt(auto.colorCode[5]); break;
+        case 6: this.grid[y][x] = parseInt(auto.colorCode[6]); break;
       }
     }
   }
@@ -118,12 +119,15 @@ class Grid {
 }
 
 
-// --- Ant Class ---
-class Ant {
+// --- Auto Class ---
+class Auto {
   constructor(x, y, d) {
     this.x = x;
     this.y = y;
     this.direction = d;
+    this.colorCode = colorCode.value;
+    this.turnCode = turnCode.value;
+    this.distanceCode = distanceCode.value;
   }
 
 
@@ -140,8 +144,8 @@ class Ant {
 
 
 const grid = new Grid(gridSizeX, gridSizeY);
-let ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
-ants.forEach(a => a.draw());
+let autos = [ new Auto(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
+autos.forEach(a => a.draw());
 
 
 grid.enableClickSelection((cell) => {
@@ -149,20 +153,20 @@ grid.enableClickSelection((cell) => {
   if (buCell) {
     grid.grid[cell.y][cell.x] = buColor;
     grid.draw();
-    ants.forEach(a => a.draw());
+    autos.forEach(a => a.draw());
   } else {
-    const beforeCount = ants.length;
-    ants = ants.filter(a => !(a.x === cell.x && a.y === cell.y)); //No clue how this works
-    const afterCount = ants.length;
+    const beforeCount = autos.length;
+    autos = autos.filter(a => !(a.x === cell.x && a.y === cell.y)); //No clue how this works
+    const afterCount = autos.length;
     if (afterCount === beforeCount) {
-      // No ants were removed -> add a new ant at the clicked location
-      const newAnt = new Ant(cell.x, cell.y, buDirection);
-      ants.push(newAnt);
+      // No autos were removed -> add a new auto at the clicked location
+      const newAuto = new Auto(cell.x, cell.y, buDirection);
+      autos.push(newAuto);
     }
 
 
     grid.draw();
-    ants.forEach(a => a.draw());
+    autos.forEach(a => a.draw());
   }
 });
 
@@ -183,9 +187,9 @@ startReset.onclick = () => {
     started = false;
     playing = false;
     grid.grid = grid.createGrid();
-    ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
+    autos = [ new Auto(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ants.forEach(a => a.draw());
+    autos.forEach(a => a.draw());
     requestAnimationFrame
     pausePlay.classList.add('hidden');
   } else {
@@ -218,22 +222,22 @@ step.onclick = () => {
 
 
 function stepOnce() {
-  if (ants.length === 0) return;
+  if (autos.length === 0) return;
 
 
-  const decisions = ants.map(a => {
+  const decisions = autos.map(a => {
     const cellColor = grid.getCell(a.x, a.y);
     let newDir;
     switch (cellColor) {
-      case 0: newDir = (a.direction + parseInt(turnCode.value[0])) % 4; break;
-      case 1: newDir = (a.direction + parseInt(turnCode.value[1])) % 4; break;
-      case 2: newDir = (a.direction + parseInt(turnCode.value[2])) % 4; break;
-      case 3: newDir = (a.direction + parseInt(turnCode.value[3])) % 4; break;
-      case 4: newDir = (a.direction + parseInt(turnCode.value[4])) % 4; break;
-      case 5: newDir = (a.direction + parseInt(turnCode.value[5])) % 4; break;
-      case 6: newDir = (a.direction + parseInt(turnCode.value[6])) % 4; break;
+      case 0: newDir = (a.direction + parseInt(a.turnCode[0])) % 4; break;
+      case 1: newDir = (a.direction + parseInt(a.turnCode[1])) % 4; break;
+      case 2: newDir = (a.direction + parseInt(a.turnCode[2])) % 4; break;
+      case 3: newDir = (a.direction + parseInt(a.turnCode[3])) % 4; break;
+      case 4: newDir = (a.direction + parseInt(a.turnCode[4])) % 4; break;
+      case 5: newDir = (a.direction + parseInt(a.turnCode[5])) % 4; break;
+      case 6: newDir = (a.direction + parseInt(a.turnCode[6])) % 4; break;
     }
-    return { ant: a, newDir, x: a.x, y: a.y };
+    return { auto: a, newDir, x: a.x, y: a.y };
   });
 
 
@@ -242,26 +246,33 @@ function stepOnce() {
     const key = `${d.x},${d.y}`; // No clue how this works
     flipCounts.set(key, (flipCounts.get(key) || 0) + 1);
   });
+  // Keep track of which auto was last to visit each cell
+  const lastAutoAtCell = new Map();
+  decisions.forEach(d => {
+    lastAutoAtCell.set(`${d.x},${d.y}`, d.auto);
+  });
+  
   flipCounts.forEach((count, key) => {
     if (count % 2 === 1) {
       const [sx, sy] = key.split(',').map(Number);
-      grid.flipCell(sx, sy);
+      const auto = lastAutoAtCell.get(key);
+      grid.flipCell(sx, sy, auto);
     }
   });
 
 
   decisions.forEach(d => {
-    const a = d.ant;
+    const a = d.auto;
     a.direction = d.newDir;
     let distance;
     switch (grid.getCell(a.x, a.y)) {
-      case 0: distance = parseInt(distanceCode.value[0]); break;
-      case 1: distance = parseInt(distanceCode.value[1]); break;
-      case 2: distance = parseInt(distanceCode.value[2]); break;
-      case 3: distance = parseInt(distanceCode.value[3]); break;
-      case 4: distance = parseInt(distanceCode.value[4]); break;
-      case 5: distance = parseInt(distanceCode.value[5]); break;
-      case 6: distance = parseInt(distanceCode.value[6]); break;
+      case 0: distance = parseInt(a.distanceCode[0]); break;
+      case 1: distance = parseInt(a.distanceCode[1]); break;
+      case 2: distance = parseInt(a.distanceCode[2]); break;
+      case 3: distance = parseInt(a.distanceCode[3]); break;
+      case 4: distance = parseInt(a.distanceCode[4]); break;
+      case 5: distance = parseInt(a.distanceCode[5]); break;
+      case 6: distance = parseInt(a.distanceCode[6]); break;
     }
     switch (a.direction) {
       case 0: a.y -= distance; break;
@@ -275,7 +286,7 @@ function stepOnce() {
 
 
   grid.draw();
-  ants.forEach(a => a.draw());
+  autos.forEach(a => a.draw());
   steps++;
   stepCount.textContent = `${steps}`;
 }
@@ -283,22 +294,27 @@ function stepOnce() {
 
 // --- Build Control ---
 save.onclick = () => { // Move it to Rule Controls later
-  const link = document.createElement("a");
-  link.download = "pattern.png";
-  link.href = canvas.toDataURL();
-  link.click();
+  if (!graphName.value) {
+    alert('Please enter a graph name before saving.');
+    return;
+  } else {
+    const link = document.createElement("a");
+    link.download = graphName.value + ".png";
+    link.href = canvas.toDataURL();
+    link.click();
+  }
 }
 
 
-bAntCell.onclick = () => {
+bAutoCell.onclick = () => {
   buCell ? buCell = false : buCell = true;
-  buAnt ? buAnt = false : buAnt = true;
-  if (buAnt) {
-    bAntCell.textContent = 'ant';
+  buAuto ? buAuto = false : buAuto = true;
+  if (buAuto) {
+    bAutoCell.textContent = 'auto';
     bDirection.classList.remove('hidden');
     bColor.classList.add('hidden');
   } else {
-    bAntCell.textContent = 'cell';
+    bAutoCell.textContent = 'cell';
     bDirection.classList.add('hidden');
     bColor.classList.remove('hidden');
   }
