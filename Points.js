@@ -4,24 +4,33 @@ const pausePlay = document.getElementById('pause-play');
 const save = document.getElementById('save');
 const step = document.getElementById('step');
 const stepCount = document.getElementById('stepCount');
-const bAntCell = document.getElementById('bAnt-cell'); // b stands for "in build section"
+const bAntCell = document.getElementById('bAnt-cell');
 const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
 const canvas = document.getElementById('kansas');
+const colorCode = document.getElementById('color-code');
+const turnCode = document.getElementById('turn-code');
+const distanceCode = document.getElementById('distance-code');
 const ctx = canvas.getContext('2d');
 const cellSize = 5;
 var started = false;
 var playing = false;
 var steps = 0;
-var buAnt = true; // bu satands for "building"
-var buDirection = 0; // 0: North, 1: East, 2: South, 3: West
+var buAnt = true;
+var buDirection = 0;
 var buCell = false;
+<<<<<<< HEAD
 var buColor = 1;
+=======
+var buColor = 0;
+
+>>>>>>> 2e41dc2f3aa42745db63c7c184157bd624b11849
 
 canvas.width = 600;
 canvas.height = 600;
 const gridSizeX = Math.floor(canvas.width / cellSize);
 const gridSizeY = Math.floor(canvas.height / cellSize);
+
 
 // --- Grid Class ---
 class Grid {
@@ -31,15 +40,26 @@ class Grid {
     this.grid = this.createGrid();
   }
 
+
   createGrid() {
     return Array(this.height).fill(null).map(() => Array(this.width).fill(0));
   }
 
-  flipCell(x, y) { // This needs to be changed so that it cycles through multiple colors accoring to the code.
+
+  flipCell(x, y) {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-      this.grid[y][x] = this.grid[y][x] === 0 ? 1 : 0;
+      switch (this.grid[y][x] = this.grid[y][x]) {
+        case 0: this.grid[y][x] = parseInt(colorCode.value[0]); break;
+        case 1: this.grid[y][x] = parseInt(colorCode.value[1]); break;
+        case 2: this.grid[y][x] = parseInt(colorCode.value[2]); break;
+        case 3: this.grid[y][x] = parseInt(colorCode.value[3]); break;
+        case 4: this.grid[y][x] = parseInt(colorCode.value[4]); break;
+        case 5: this.grid[y][x] = parseInt(colorCode.value[5]); break;
+        case 6: this.grid[y][x] = parseInt(colorCode.value[6]); break;
+      }
     }
   }
+
 
   getCell(x, y) {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
@@ -48,25 +68,24 @@ class Grid {
     return null;
   }
 
-  /**
-   * Map canvas client coordinates (e.g. MouseEvent.clientX/Y) to grid cell indices
-   * and return an object { x, y, value } or null if outside grid.
-   * This accounts for the canvas CSS size vs drawing buffer.
-   */
+
   cellAtCanvasPoint(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    // Calculate CSS pixel coordinates relative to canvas
     const cssX = clientX - rect.left;
     const cssY = clientY - rect.top;
+
 
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
+
     const canvasX = Math.floor(cssX * scaleX);
     const canvasY = Math.floor(cssY * scaleY);
 
+
     const gridX = Math.floor(canvasX / cellSize);
     const gridY = Math.floor(canvasY / cellSize);
+
 
     if (gridX >= 0 && gridX < this.width && gridY >= 0 && gridY < this.height) {
       return { x: gridX, y: gridY, value: this.getCell(gridX, gridY) };
@@ -74,13 +93,9 @@ class Grid {
     return null;
   }
 
-  /**
-   * Attach a click listener to the canvas that calls `callback(cellInfo, event)`
-   * where cellInfo is { x, y, value } or null when click is outside grid.
-   * Returns a function to remove the listener.
-   */
-  enableClickSelection(callback) {
-    const fCell = (ev) => { // f stands for "flip"
+
+  enableClickSelection(callback) { // No idea how this works
+    const fCell = (ev) => {
       const cell = this.cellAtCanvasPoint(ev.clientX, ev.clientY);
       callback(cell, ev);
     };
@@ -88,75 +103,81 @@ class Grid {
     return () => canvas.removeEventListener('click', fCell);
   }
 
+
   draw() {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        ctx.fillStyle = this.getCell(x, y) === 1 ? 'rgb(255,255,255)' : 'rgb(0,0,0)';
+        switch (this.getCell(x, y)) {
+          case 0: ctx.fillStyle = 'rgb(0, 0, 0)'; break;       // Black
+          case 1: ctx.fillStyle = 'rgb(255, 0, 0)'; break;     // Red
+          case 2: ctx.fillStyle = 'rgb(255, 255, 0)'; break;     // Yellow
+          case 3: ctx.fillStyle = 'rgb(0, 255, 0)'; break;     // Green
+          case 4: ctx.fillStyle = 'rgb(0, 255, 255)'; break;   // Cyan
+          case 5: ctx.fillStyle = 'rgb(0, 0, 255)'; break;   // Blue
+          case 6: ctx.fillStyle = 'rgb(255, 0, 255)'; break;   // Magenta
+        }
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
   }
 }
 
+
 // --- Ant Class ---
 class Ant {
   constructor(x, y, d) {
     this.x = x;
     this.y = y;
-    this.direction = d; // 0: North, 1: East, 2: South, 3: West
+    this.direction = d;
   }
+
 
   draw() {
     switch (this.direction) {
-      case 0: ctx.fillStyle = 'rgb(51, 51, 51)'; break; // North (red)
-      case 1: ctx.fillStyle = 'rgb(102, 102, 102)'; break; // East (yellow)
-      case 2: ctx.fillStyle = 'rgb(153, 153, 153)'; break; // South (green)
-      case 3: ctx.fillStyle = 'rgb(204, 204, 204)'; break; // West (blue)
+      case 0: ctx.fillStyle = 'rgb(51, 51, 51)'; break;
+      case 1: ctx.fillStyle = 'rgb(102, 102, 102)'; break;
+      case 2: ctx.fillStyle = 'rgb(153, 153, 153)'; break;
+      case 3: ctx.fillStyle = 'rgb(204, 204, 204)'; break;
     }
     ctx.fillRect(this.x * cellSize, this.y * cellSize, cellSize, cellSize);
   }
 }
 
+
 const grid = new Grid(gridSizeX, gridSizeY);
 let ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
 ants.forEach(a => a.draw());
 
-// Enable clicking the canvas to flip the clicked cell's color and redraw.
-// This works whether simulation has started or not.
+
 grid.enableClickSelection((cell) => {
   if (!cell) return;
   if (buCell) {
-    // Flip a grid cell when in cell-build mode
-    grid.flipCell(cell.x, cell.y);
+    grid.grid[cell.y][cell.x] = buColor;
     grid.draw();
-    // redraw all ants after grid change
     ants.forEach(a => a.draw());
   } else {
-    // When not in cell-build mode, if there are any ants on the clicked tile,
-    // remove them. Otherwise, create a new Ant at that location.
     const beforeCount = ants.length;
-    // Remove ants that sit exactly on the clicked tile
-    ants = ants.filter(a => !(a.x === cell.x && a.y === cell.y));
+    ants = ants.filter(a => !(a.x === cell.x && a.y === cell.y)); //No clue how this works
     const afterCount = ants.length;
-
     if (afterCount === beforeCount) {
       // No ants were removed -> add a new ant at the clicked location
       const newAnt = new Ant(cell.x, cell.y, buDirection);
       ants.push(newAnt);
     }
 
-    // redraw grid and all ants
+
     grid.draw();
     ants.forEach(a => a.draw());
   }
 });
 
+
 function animate() {
-  // Perform one synchronized step for all ants (order-independent)
   stepOnce();
   if (playing)
     requestAnimationFrame(animate);
 }
+
 
 // --- Flow Control ---
 startReset.onclick = () => {
@@ -167,7 +188,6 @@ startReset.onclick = () => {
     started = false;
     playing = false;
     grid.grid = grid.createGrid();
-    // Reset ants array to a single ant centered in the grid
     ants = [ new Ant(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ants.forEach(a => a.draw());
@@ -184,6 +204,7 @@ startReset.onclick = () => {
   }
 }
 
+
 pausePlay.onclick = () => {
   pausePlay.textContent = playing ? 'play' : 'pause';
   playing ? playing = false : playing = true;
@@ -195,39 +216,37 @@ pausePlay.onclick = () => {
   }
 };
 
+
 step.onclick = () => {
   stepOnce();
 }
 
-/**
- * stepOnce()
- * Perform one simulation step in an order-independent way:
- * - Read the current grid state once.
- * - For each ant, decide its new direction based solely on the current cell value.
- * - Collect all grid flips that should happen this step (a flip per ant on its current cell).
- * - Apply all flips to the grid (so flips are effectively atomic for this step).
- * - After flips are applied, move each ant according to its decided new direction and wrap.
- */
+
 function stepOnce() {
   if (ants.length === 0) return;
 
-  // Snapshot is not a deep copy of the grid array; we only need cell values at ants' positions
+
   const decisions = ants.map(a => {
     const cellColor = grid.getCell(a.x, a.y);
-    // Determine new direction based on current cell color (0: turn right, 1: turn left)
-    const newDir = cellColor === 0 ? (a.direction + 1) % 4 : (a.direction - 1 + 4) % 4;
+    let newDir;
+    switch (cellColor) {
+      case 0: newDir = (a.direction + parseInt(turnCode.value[0])) % 4; break;
+      case 1: newDir = (a.direction + parseInt(turnCode.value[1])) % 4; break;
+      case 2: newDir = (a.direction + parseInt(turnCode.value[2])) % 4; break;
+      case 3: newDir = (a.direction + parseInt(turnCode.value[3])) % 4; break;
+      case 4: newDir = (a.direction + parseInt(turnCode.value[4])) % 4; break;
+      case 5: newDir = (a.direction + parseInt(turnCode.value[5])) % 4; break;
+      case 6: newDir = (a.direction + parseInt(turnCode.value[6])) % 4; break;
+    }
     return { ant: a, newDir, x: a.x, y: a.y };
   });
 
-  // Apply all flips for ants' current cells
-  // Use a Set keyed by "x,y" so multiple ants on same cell flip multiple times (i.e., each ant flips once)
+
   const flipCounts = new Map();
   decisions.forEach(d => {
-    const key = `${d.x},${d.y}`;
+    const key = `${d.x},${d.y}`; // No clue how this works
     flipCounts.set(key, (flipCounts.get(key) || 0) + 1);
   });
-
-  // Now apply flips: an odd count -> flip, even count -> no net change
   flipCounts.forEach((count, key) => {
     if (count % 2 === 1) {
       const [sx, sy] = key.split(',').map(Number);
@@ -235,35 +254,47 @@ function stepOnce() {
     }
   });
 
-  // Finally, update ants' directions and positions based on previously computed newDir
+
   decisions.forEach(d => {
     const a = d.ant;
     a.direction = d.newDir;
+    let distance;
+    switch (grid.getCell(a.x, a.y)) {
+      case 0: distance = parseInt(distanceCode.value[0]); break;
+      case 1: distance = parseInt(distanceCode.value[1]); break;
+      case 2: distance = parseInt(distanceCode.value[2]); break;
+      case 3: distance = parseInt(distanceCode.value[3]); break;
+      case 4: distance = parseInt(distanceCode.value[4]); break;
+      case 5: distance = parseInt(distanceCode.value[5]); break;
+      case 6: distance = parseInt(distanceCode.value[6]); break;
+    }
     switch (a.direction) {
-      case 0: a.y -= 1; break;
-      case 1: a.x += 1; break;
-      case 2: a.y += 1; break;
-      case 3: a.x -= 1; break;
+      case 0: a.y -= distance; break;
+      case 1: a.x += distance; break;
+      case 2: a.y += distance; break;
+      case 3: a.x -= distance; break;
     }
     a.x = (a.x + gridSizeX) % gridSizeX;
     a.y = (a.y + gridSizeY) % gridSizeY;
   });
 
-  // Draw grid and ants, update step counter
+
   grid.draw();
   ants.forEach(a => a.draw());
   steps++;
   stepCount.textContent = `${steps}`;
 }
 
-save.onclick = () => {
+
+// --- Build Control ---
+save.onclick = () => { // Move it to Rule Controls later
   const link = document.createElement("a");
   link.download = "pattern.png";
   link.href = canvas.toDataURL();
   link.click();
 }
 
-// --- Build Control ---
+
 bAntCell.onclick = () => {
   buCell ? buCell = false : buCell = true;
   buAnt ? buAnt = false : buAnt = true;
@@ -278,6 +309,7 @@ bAntCell.onclick = () => {
   }
 }
 
+
 bDirection.onclick = () => {
   switch (buDirection) {
     case 0: buDirection = 1; bDirection.textContent = 'east'; break;
@@ -287,4 +319,15 @@ bDirection.onclick = () => {
   }
 }
 
-bColor.onclick = () => {}
+
+bColor.onclick = () => {
+  switch (buColor) {
+    case 0: buColor = 1; bColor.textContent = 'red'; break;
+    case 1: buColor = 2; bColor.textContent = 'yellow'; break;
+    case 2: buColor = 3; bColor.textContent = 'green'; break;
+    case 3: buColor = 4; bColor.textContent = 'cyan'; break;
+    case 4: buColor = 5; bColor.textContent = 'blue'; break;
+    case 5: buColor = 6; bColor.textContent = 'magenta'; break;
+    case 6: buColor = 0; bColor.textContent = 'black'; break;
+  }
+}
