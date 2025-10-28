@@ -5,6 +5,7 @@ const save = document.getElementById('save');
 const step = document.getElementById('step');
 const stepCount = document.getElementById('stepCount');
 const bAutoCell = document.getElementById('bAuto-cell');
+const bKill = document.getElementById('bKill');
 const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
 const canvas = document.getElementById('kansas');
@@ -12,6 +13,9 @@ const graphName = document.getElementById('graph-name');
 const colorCode = document.getElementById('color-code');
 const turnCode = document.getElementById('turn-code');
 const distanceCode = document.getElementById('distance-code');
+const randomColor = document.getElementById('random-color');
+const randomTurn = document.getElementById('random-turn');
+const randomDistance = document.getElementById('random-distance');
 const ctx = canvas.getContext('2d');
 const cellSize = 5;
 var started = false;
@@ -228,16 +232,38 @@ function stepOnce() {
   const decisions = autos.map(a => {
     const cellColor = grid.getCell(a.x, a.y);
     let newDir;
+    let distance;
     switch (cellColor) {
-      case 0: newDir = (a.direction + parseInt(a.turnCode[0])) % 4; break;
-      case 1: newDir = (a.direction + parseInt(a.turnCode[1])) % 4; break;
-      case 2: newDir = (a.direction + parseInt(a.turnCode[2])) % 4; break;
-      case 3: newDir = (a.direction + parseInt(a.turnCode[3])) % 4; break;
-      case 4: newDir = (a.direction + parseInt(a.turnCode[4])) % 4; break;
-      case 5: newDir = (a.direction + parseInt(a.turnCode[5])) % 4; break;
-      case 6: newDir = (a.direction + parseInt(a.turnCode[6])) % 4; break;
+      case 0: 
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[0]));
+        distance = parseInt(a.distanceCode[0]);
+        break;
+      case 1:
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[1]));
+        distance = parseInt(a.distanceCode[1]);
+        break;
+      case 2:
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[2]));
+        distance = parseInt(a.distanceCode[2]);
+        break;
+      case 3:
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[3]));
+        distance = parseInt(a.distanceCode[3]);
+        break;
+      case 4:
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[4]));
+        distance = parseInt(a.distanceCode[4]);
+        break;
+      case 5:
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[5]));
+        distance = parseInt(a.distanceCode[5]);
+        break;
+      case 6:
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[6]));
+        distance = parseInt(a.distanceCode[6]);
+        break;
     }
-    return { auto: a, newDir, x: a.x, y: a.y };
+    return { auto: a, newDir, x: a.x, y: a.y, distance };
   });
 
 
@@ -264,16 +290,7 @@ function stepOnce() {
   decisions.forEach(d => {
     const a = d.auto;
     a.direction = d.newDir;
-    let distance;
-    switch (grid.getCell(a.x, a.y)) {
-      case 0: distance = parseInt(a.distanceCode[0]); break;
-      case 1: distance = parseInt(a.distanceCode[1]); break;
-      case 2: distance = parseInt(a.distanceCode[2]); break;
-      case 3: distance = parseInt(a.distanceCode[3]); break;
-      case 4: distance = parseInt(a.distanceCode[4]); break;
-      case 5: distance = parseInt(a.distanceCode[5]); break;
-      case 6: distance = parseInt(a.distanceCode[6]); break;
-    }
+    const distance = d.distance;
     switch (a.direction) {
       case 0: a.y -= distance; break;
       case 1: a.x += distance; break;
@@ -291,19 +308,20 @@ function stepOnce() {
   stepCount.textContent = `${steps}`;
 }
 
+function decideNewDirection(i, x) {
+  if(x < 4)
+    i = (x + i) % 4;
+  else
+    switch(x) {
+      case 4: i = 0; break;
+      case 5: i = 1; break;
+      case 6: i = 2; break;
+      case 7: i = 3; break;
+    }
+  return i;
+}
 
 // --- Build Control ---
-save.onclick = () => { // Move it to Rule Controls later
-  if (!graphName.value) {
-    alert('Please enter a graph name before saving.');
-    return;
-  } else {
-    const link = document.createElement("a");
-    link.download = graphName.value + ".png";
-    link.href = canvas.toDataURL();
-    link.click();
-  }
-}
 
 
 bAutoCell.onclick = () => {
@@ -312,10 +330,12 @@ bAutoCell.onclick = () => {
   if (buAuto) {
     bAutoCell.textContent = 'auto';
     bDirection.classList.remove('hidden');
+    bKill.classList.remove('hidden');
     bColor.classList.add('hidden');
   } else {
     bAutoCell.textContent = 'cell';
     bDirection.classList.add('hidden');
+    bKill.classList.add('hidden');
     bColor.classList.remove('hidden');
   }
 }
@@ -330,6 +350,11 @@ bDirection.onclick = () => {
   }
 }
 
+bKill.onclick = () => {
+  autos.length = 0;
+  grid.draw();
+}
+
 
 bColor.onclick = () => {
   switch (buColor) {
@@ -341,4 +366,46 @@ bColor.onclick = () => {
     case 5: buColor = 6; bColor.textContent = 'magenta'; break;
     case 6: buColor = 0; bColor.textContent = 'black'; break;
   }
+}
+
+// --- Rule Control ---
+save.onclick = () => {
+  if (!graphName.value) {
+    alert('Please enter a graph name before saving.');
+    return;
+  } else {
+    const link = document.createElement("a");
+    link.download = graphName.value + ".png";
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+}
+
+randomColor.onclick = () => {
+  let newColorCode = '';
+  newColorCode += Math.floor(Math.random() * 6 + 1).toString();
+  for (let i = 0; i < 6; i++) {
+    const randColor = Math.floor(Math.random() * 7);
+    newColorCode += randColor.toString();
+  }
+  colorCode.value = newColorCode;
+}
+
+randomTurn.onclick = () => {
+  let newTurnCode = '';
+  newTurnCode += Math.floor(Math.random() * 3 + 1).toString();
+  for (let i = 0; i < 7; i++) {
+    const randTurn = Math.floor(Math.random() * 4);
+    newTurnCode += randTurn.toString();
+  }
+  turnCode.value = newTurnCode;
+}
+
+randomDistance.onclick = () => {
+  let newDistanceCode = '';
+  for (let i = 0; i < 7; i++) {
+    const randDistance = Math.floor(Math.random() * 2 + 1);
+    newDistanceCode += randDistance.toString();
+  }
+  distanceCode.value = newDistanceCode;
 }
