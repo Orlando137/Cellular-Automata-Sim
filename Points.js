@@ -16,6 +16,9 @@ const distanceCode = document.getElementById('distance-code');
 const randomColor = document.getElementById('random-color');
 const randomTurn = document.getElementById('random-turn');
 const randomDistance = document.getElementById('random-distance');
+const showRule = document.getElementById('show-rule');
+const ruleCopy = document.getElementById('rule-copy');
+const implementRule = document.getElementById('implement-rule');
 const ctx = canvas.getContext('2d');
 const cellSize = 5;
 var started = false;
@@ -94,13 +97,18 @@ class Grid {
   }
 
 
-  enableClickSelection(callback) { // No idea how this works
+  enableClickSelection(callback) {
     const fCell = (ev) => {
+      ev.preventDefault(); // Prevent default right-click menu
       const cell = this.cellAtCanvasPoint(ev.clientX, ev.clientY);
       callback(cell, ev);
     };
     canvas.addEventListener('click', fCell);
-    return () => canvas.removeEventListener('click', fCell);
+    canvas.addEventListener('contextmenu', fCell);
+    return () => {
+      canvas.removeEventListener('click', fCell);
+      canvas.removeEventListener('contextmenu', fCell);
+    };
   }
 
 
@@ -152,15 +160,26 @@ let autos = [ new Auto(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) 
 autos.forEach(a => a.draw());
 
 
-grid.enableClickSelection((cell) => {
+grid.enableClickSelection((cell, ev) => {
   if (!cell) return;
+  
+  // Handle right click to show Auto rules
+  if (ev.type === 'contextmenu') {
+    const clickedAuto = autos.find(a => a.x === cell.x && a.y === cell.y);
+    if (clickedAuto) {
+      showRule.textContent = `rule: ${clickedAuto.colorCode} | ${clickedAuto.turnCode} | ${clickedAuto.distanceCode}`;
+      return;
+    }
+  }
+
+  // Handle left click for normal interactions
   if (buCell) {
     grid.grid[cell.y][cell.x] = buColor;
     grid.draw();
     autos.forEach(a => a.draw());
   } else {
     const beforeCount = autos.length;
-    autos = autos.filter(a => !(a.x === cell.x && a.y === cell.y)); //No clue how this works
+    autos = autos.filter(a => !(a.x === cell.x && a.y === cell.y));
     const afterCount = autos.length;
     if (afterCount === beforeCount) {
       // No autos were removed -> add a new auto at the clicked location
@@ -394,7 +413,7 @@ randomColor.onclick = () => {
 randomTurn.onclick = () => {
   let newTurnCode = '';
   newTurnCode += Math.floor(Math.random() * 3 + 1).toString();
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 6; i++) {
     const randTurn = Math.floor(Math.random() * 4);
     newTurnCode += randTurn.toString();
   }
@@ -408,4 +427,15 @@ randomDistance.onclick = () => {
     newDistanceCode += randDistance.toString();
   }
   distanceCode.value = newDistanceCode;
+}
+
+implementRule.onclick = () => {
+  // Expect showRule.textContent in format: "rule: color | turn | distance"
+  const ruleText = showRule.textContent.trim();
+  const match = ruleText.match(/rule:\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
+  if (match) {
+    colorCode.value = match[1];
+    turnCode.value = match[2];
+    distanceCode.value = match[3];
+  }
 }

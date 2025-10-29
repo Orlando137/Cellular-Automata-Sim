@@ -23,6 +23,8 @@
                 <button id="bKill" class="button">kill</button>
                 <button id="bColor" class="button hidden">black</button>
             </div>
+            <h1>Notepad</h1>
+            <textarea id="paragraphInput" rows="5" cols="50" placeholder="Enter your rules here..."></textarea>
         </div>
         <canvas id="kansas"></canvas>
         <div id="rule">
@@ -56,6 +58,14 @@
                 <button id="random-color" class="button">color</button>
                 <button id="random-turn" class="button">turn</button>
                 <button id="random-distance" class="button">distance</button>
+            </div>
+            <h1>Rules</h1>
+            <div class="flex space-x-2 mt-1 mb-1">
+                <p id="show-rule" class="text-white">rule: 0000000 | 0000000 | 1111111</p>
+            </div>
+            <div class="flex space-x-2 mb-2">
+                <input id="rule-copy" class="input flex-grow text-black" placeholder="Enter rule to copy">
+                <button id="implement-rule" class="button whitespace-nowrap">go</button>
             </div>
         <script src="Points.js"></script>
     </body>
