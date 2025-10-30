@@ -296,7 +296,7 @@ function stepOnce() {
   decisions.forEach(d => {
     lastAutoAtCell.set(`${d.x},${d.y}`, d.auto);
   });
-  
+
   flipCounts.forEach((count, key) => {
     if (count % 2 === 1) {
       const [sx, sy] = key.split(',').map(Number);
@@ -430,12 +430,12 @@ randomDistance.onclick = () => {
 }
 
 implementRule.onclick = () => {
-  // Expect showRule.textContent in format: "rule: color | turn | distance"
-  const ruleText = showRule.textContent.trim();
-  const match = ruleText.match(/rule:\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
+  const ruleText = ruleCopy.value.trim();
+  const match = ruleText.match(/(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
   if (match) {
     colorCode.value = match[1];
     turnCode.value = match[2];
     distanceCode.value = match[3];
+    ruleCopy.value = '';
   }
 }
