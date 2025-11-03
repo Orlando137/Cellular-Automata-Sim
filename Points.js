@@ -15,6 +15,7 @@ const turnCode = document.getElementById('turn-code');
 const distanceCode = document.getElementById('distance-code');
 const randomColor = document.getElementById('random-color');
 const randomTurn = document.getElementById('random-turn');
+const randomAll = document.getElementById('random-all');
 const randomDistance = document.getElementById('random-distance');
 const showRule = document.getElementById('show-rule');
 const ruleCopy = document.getElementById('rule-copy');
@@ -427,6 +428,12 @@ randomDistance.onclick = () => {
     newDistanceCode += randDistance.toString();
   }
   distanceCode.value = newDistanceCode;
+}
+
+randomAll.onclick = () => {
+  randomColor.onclick();
+  randomTurn.onclick();
+  randomDistance.onclick();
 }
 
 implementRule.onclick = () => {
