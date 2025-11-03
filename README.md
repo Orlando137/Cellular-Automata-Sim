@@ -36,6 +36,8 @@ This project simulates cellular automata — computational models of simple “c
 - Press `play` to resume simulating, or `reset` to start over.
 - The number to the right counts how many timesteps have happened in the simulation.
 
+- When no autos exist, the simulation will not run.
+
 ### Build Control
 - The button that reads `north` can be pressed, and will cycle through the cardinal directions
 - When the farthest left button reads `auto`, auto building mode is enabled
@@ -48,16 +50,57 @@ The notepad is there simply for the convienence of the user. I recommend using i
 
 ## Right Side
 ### Saving the Graph
+- Enter a name into the graph, then press the `save` button.
+- The state of the central canvas is saved as a PNG.file.
 
 ### Control
+- `color code` determines how an auto changes the tile color.
+- The position of each digit represents the initial color.
+- The value of each digit represents the final color.
+
+- `turn code` determines how an auto changes direction.
+- The position of each digit represents the initial color.
+- Values 0 through 3 determine how many right angle clockwise turns the auto makes.
+- Values 4 through 7 determine cardinal directions, north through west.
+
+- `distance code` determines how an auto changes loctaion.
+- The position of each digit represents the initial color.
+- The value of each digit represents how many tiles the auto will move.
 
 ### Random Rules
+- `color` generates a valid random code
+- It will never begin with 0.
+
+- `turn` generates a valid turn code.
+- It will never begin with 0.
+- It will only contain values from 0 to 3.
+
+- `distance` generates a valid distance code.
+- All values will be either 1 or 2.
+
+- `all` has the functionality of `color`, `turn`, and `distance` combined.
+
+- NOTE: Pressing these buttons directly change the input field of the codes!
 
 ### Finding Rules
+Right click on an auto to display the rule in `rule:`.
 
 ### Entering Rules
+- Copy the desired rule IN THE DEFUALT FORMAT, then press `go`.
+
+- NOTE: Pressing `go` directly ghanges the input field of the codes!
 
 ## Graph
+- In `auto` mode, clicking on a tile will add an auto with the given direction.
+- In `cell` mode, clicking on a tile change the cell's color to the given color.
+- In any mode, right-clicking on an auto will find that auto's rules
+
+- At start or upon reset, an auto will be put in the middle of the graph with the current rule.
 
 ## 📜 Conventions
+- An auto's rules are final and are set at instantiation.
+- The auto reads the tile, then uses that to turn THEN move.
+- Black, red, yellow, green, cyan, blue, and magenta are represented as 0 ... 6.
+- When multiple autos are on the same tile, the tile will not change color when they move.
 
+## 💡 Tips
