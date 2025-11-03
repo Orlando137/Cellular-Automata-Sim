@@ -29,10 +29,35 @@ This project simulates cellular automata — computational models of simple “c
 # Specific Information
 **Beyond general information about the field, understanding the UI is just as important**
 
-## 👁️ Overwiew
-<p align="center">
-  <img src="README_Files/OVERVIEW.png" width="600" alt="Initial UI">
-</p>
+## Left Side
+### Flow Control
+- Press `start` to begin simulating, or press `step`.
+- Press `pause` to stop simulating.
+- Press `play` to resume simulating, or `reset` to start over.
+- The number to the right counts how many timesteps have happened in the simulation.
+
+### Build Control
+- The button that reads `north` can be pressed, and will cycle through the cardinal directions
+- When the farthest left button reads `auto`, auto building mode is enabled
+- The farthest left button can be toggled to read `cell`, which enables cell mode.
+- In cell mode, the middle button contols the color to be built in cell mode.
+- The `kill` button removes all autos on the screen.
+
+### Notepad
+The notepad is there simply for the convienence of the user. I recommend using it to store good rules.
+
+## Right Side
+### Saving the Graph
+
+### Control
+
+### Random Rules
+
+### Finding Rules
+
+### Entering Rules
+
+## Graph
 
 ## 📜 Conventions
 
