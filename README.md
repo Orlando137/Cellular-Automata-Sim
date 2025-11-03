@@ -30,4 +30,9 @@ This project simulates cellular automata — computational models of simple “c
 **Beyond general information about the field, understanding the UI is just as important**
 
 ## 👁️ Overwiew
-![Simulation Screenshot]("OVERVIEW.png")
+<p align="center">
+  <img src="README_Files/OVERVIEW.png" width="600" alt="Initial UI">
+</p>
+
+## 📜 Conventions
+
