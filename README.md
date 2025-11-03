@@ -30,5 +30,4 @@ This project simulates cellular automata — computational models of simple “c
 **Beyond general information about the field, understanding the UI is just as important**
 
 ## 👁️ Overwiew
-![Simulation Screenshot](<img width="1914" height="941" alt="Screenshot 2025-11-03 094310" src="https://github.com/user-attachments/assets/d9821d93-b2e3-4953-b853-2fe435575052" />
-)
+![Simulation Screenshot](Screenshot 2025 11-03 094310.png)
