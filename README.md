@@ -2,7 +2,7 @@
 **Automata create patterns from observing colors and reacting. Discover how the emerging complexity of cellular automation today.**
 
 ## 🚀 Introduction  
-This project simulates cellular automata — computational models of simple “cells” that evolve over time based on the states of their environment and some rules. With this simulation, you can define how spefic automata interact, where and when they begin, as well as their orientation. explore how predictable local interactions generate complex global behavior.
+This project simulates "autos" that evolve over time and affect "tiles" based on the states of their environment and some rules. With this simulation, you can define how spefic automata interact, where and when they begin, as well as their orientation. explore how predictable local interactions generate complex global behavior.
 
 ## 🛠️ Built With  
 - HTML (front end)  
@@ -103,4 +103,28 @@ Right click on an auto to display the rule in `rule:`.
 - Black, red, yellow, green, cyan, blue, and magenta are represented as 0 ... 6.
 - When multiple autos are on the same tile, the tile will not change color when they move.
 
-## 💡 Tips
+# 💡 Tips
+## Graph
+- Try updating the text in `rule: ` by clicking left, right, left on the graph.
+- If an auto gets in a loop, then try going into `cell mode` and adding black to the loop.
+
+## Rules
+- Try making a system to qualitively describe the behavior of an auto
+- When a value is the same as it's index in `color code`, it can lead to weird things.
+
+## Behaviors
+Here is a list of some behaviors you may encounter:
+- Infinite loops
+- Highways
+- Psuedo chaos
+- Diamonds
+- "Solid" structure
+- "Porus" structure
+- Border colors
+- Internal colors
+- Solid internal color
+- Mixed internal color
+- Doublesided highways
+- Time-keepers
+- Slow growth
+- Fast growth
