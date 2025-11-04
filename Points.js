@@ -8,6 +8,7 @@ const bAutoCell = document.getElementById('bAuto-cell');
 const bKill = document.getElementById('bKill');
 const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
+const notePad = document.getElementById('paragraphInput');
 const canvas = document.getElementById('kansas');
 const graphName = document.getElementById('graph-name');
 const colorCode = document.getElementById('color-code');
@@ -17,6 +18,7 @@ const randomColor = document.getElementById('random-color');
 const randomTurn = document.getElementById('random-turn');
 const randomAll = document.getElementById('random-all');
 const randomDistance = document.getElementById('random-distance');
+const saveRule = document.getElementById('save-rule');
 const showRule = document.getElementById('show-rule');
 const ruleCopy = document.getElementById('rule-copy');
 const implementRule = document.getElementById('implement-rule');
@@ -168,7 +170,7 @@ grid.enableClickSelection((cell, ev) => {
   if (ev.type === 'contextmenu') {
     const clickedAuto = autos.find(a => a.x === cell.x && a.y === cell.y);
     if (clickedAuto) {
-      showRule.textContent = `rule: ${clickedAuto.colorCode} | ${clickedAuto.turnCode} | ${clickedAuto.distanceCode}`;
+      showRule.textContent = `${clickedAuto.colorCode} | ${clickedAuto.turnCode} | ${clickedAuto.distanceCode}`;
       return;
     }
   }
@@ -434,6 +436,13 @@ randomAll.onclick = () => {
   randomColor.onclick();
   randomTurn.onclick();
   randomDistance.onclick();
+}
+
+saveRule.onclick = () => {
+  if (notePad.value === '')
+    notePad.value = `${colorCode.value} | ${turnCode.value} | ${distanceCode.value}` + '\n - ';
+  else
+    notePad.value = notePad.value + '\n' + `${colorCode.value} | ${turnCode.value} | ${distanceCode.value}` + '\n - ';
 }
 
 implementRule.onclick = () => {
