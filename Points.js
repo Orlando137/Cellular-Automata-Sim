@@ -195,6 +195,7 @@ startReset.onclick = () => {
     startReset.textContent = 'start';
     steps = 0;
     stepCount.textContent = `${steps}`;
+    autoCount.textContent = `1`;
     started = false;
     playing = false;
     grid.grid = grid.createGrid();
