@@ -369,6 +369,7 @@ bDirection.onclick = () => {
 bKill.onclick = () => {
   autos.length = 0;
   grid.draw();
+  autoCount.textContent = `0`;
 }
 
 
