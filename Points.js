@@ -8,6 +8,7 @@ const bAutoCell = document.getElementById('bAuto-cell');
 const bKill = document.getElementById('bKill');
 const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
+const autoCount = document.getElementById('autoCount');
 const notePad = document.getElementById('paragraphInput');
 const canvas = document.getElementById('kansas');
 const graphName = document.getElementById('graph-name');
@@ -37,7 +38,6 @@ canvas.height = 600;
 const gridSizeX = Math.floor(canvas.width / cellSize);
 const gridSizeY = Math.floor(canvas.height / cellSize);
 
-
 // --- Grid Class ---
 class Grid {
   constructor(width, height) {
@@ -46,26 +46,23 @@ class Grid {
     this.grid = this.createGrid();
   }
 
-
   createGrid() {
     return Array(this.height).fill(null).map(() => Array(this.width).fill(0));
   }
 
-
   flipCell(x, y, auto) {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
       switch (this.grid[y][x]) {
-        case 0: this.grid[y][x] = parseInt(auto.colorCode[0]); break;
-        case 1: this.grid[y][x] = parseInt(auto.colorCode[1]); break;
-        case 2: this.grid[y][x] = parseInt(auto.colorCode[2]); break;
-        case 3: this.grid[y][x] = parseInt(auto.colorCode[3]); break;
-        case 4: this.grid[y][x] = parseInt(auto.colorCode[4]); break;
-        case 5: this.grid[y][x] = parseInt(auto.colorCode[5]); break;
-        case 6: this.grid[y][x] = parseInt(auto.colorCode[6]); break;
+        case 0: this.grid[y][x] = decideColor(parseInt(auto.colorCode[0])); break;
+        case 1: this.grid[y][x] = decideColor(parseInt(auto.colorCode[1])); break;
+        case 2: this.grid[y][x] = decideColor(parseInt(auto.colorCode[2])); break;
+        case 3: this.grid[y][x] = decideColor(parseInt(auto.colorCode[3])); break;
+        case 4: this.grid[y][x] = decideColor(parseInt(auto.colorCode[4])); break;
+        case 5: this.grid[y][x] = decideColor(parseInt(auto.colorCode[5])); break;
+        case 6: this.grid[y][x] = decideColor(parseInt(auto.colorCode[6])); break;
       }
     }
   }
-
 
   getCell(x, y) {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
@@ -74,20 +71,16 @@ class Grid {
     return null;
   }
 
-
   cellAtCanvasPoint(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     const cssX = clientX - rect.left;
     const cssY = clientY - rect.top;
 
-
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
-
     const canvasX = Math.floor(cssX * scaleX);
     const canvasY = Math.floor(cssY * scaleY);
-
 
     const gridX = Math.floor(canvasX / cellSize);
     const gridY = Math.floor(canvasY / cellSize);
@@ -98,7 +91,6 @@ class Grid {
     }
     return null;
   }
-
 
   enableClickSelection(callback) {
     const fCell = (ev) => {
@@ -113,7 +105,6 @@ class Grid {
       canvas.removeEventListener('contextmenu', fCell);
     };
   }
-
 
   draw() {
     for (let y = 0; y < this.height; y++) {
@@ -133,7 +124,6 @@ class Grid {
   }
 }
 
-
 // --- Auto Class ---
 class Auto {
   constructor(x, y, d) {
@@ -144,7 +134,6 @@ class Auto {
     this.turnCode = turnCode.value;
     this.distanceCode = distanceCode.value;
   }
-
 
   draw() {
     switch (this.direction) {
@@ -157,11 +146,9 @@ class Auto {
   }
 }
 
-
 const grid = new Grid(gridSizeX, gridSizeY);
 let autos = [ new Auto(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
 autos.forEach(a => a.draw());
-
 
 grid.enableClickSelection((cell, ev) => {
   if (!cell) return;
@@ -190,19 +177,17 @@ grid.enableClickSelection((cell, ev) => {
       autos.push(newAuto);
     }
 
-
     grid.draw();
     autos.forEach(a => a.draw());
+    autoCount.textContent = `${autos.length}`;
   }
 });
-
 
 function animate() {
   stepOnce();
   if (playing)
     requestAnimationFrame(animate);
 }
-
 
 // --- Flow Control ---
 startReset.onclick = () => {
@@ -229,7 +214,6 @@ startReset.onclick = () => {
   }
 }
 
-
 pausePlay.onclick = () => {
   pausePlay.textContent = playing ? 'play' : 'pause';
   playing ? playing = false : playing = true;
@@ -241,15 +225,12 @@ pausePlay.onclick = () => {
   }
 };
 
-
 step.onclick = () => {
   stepOnce();
 }
 
-
 function stepOnce() {
   if (autos.length === 0) return;
-
 
   const decisions = autos.map(a => {
     const cellColor = grid.getCell(a.x, a.y);
@@ -258,36 +239,35 @@ function stepOnce() {
     switch (cellColor) {
       case 0: 
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[0]));
-        distance = parseInt(a.distanceCode[0]);
+        distance = decideDistance(parseInt(a.distanceCode[0]));
         break;
       case 1:
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[1]));
-        distance = parseInt(a.distanceCode[1]);
+        distance = decideDistance(parseInt(a.distanceCode[1]));
         break;
       case 2:
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[2]));
-        distance = parseInt(a.distanceCode[2]);
+        distance = decideDistance(parseInt(a.distanceCode[2]));
         break;
       case 3:
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[3]));
-        distance = parseInt(a.distanceCode[3]);
+        distance = decideDistance(parseInt(a.distanceCode[3]));
         break;
       case 4:
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[4]));
-        distance = parseInt(a.distanceCode[4]);
+        distance = decideDistance(parseInt(a.distanceCode[4]));
         break;
       case 5:
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[5]));
-        distance = parseInt(a.distanceCode[5]);
+        distance = decideDistance(parseInt(a.distanceCode[5]));
         break;
       case 6:
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[6]));
-        distance = parseInt(a.distanceCode[6]);
+        distance = decideDistance(parseInt(a.distanceCode[6]));
         break;
     }
     return { auto: a, newDir, x: a.x, y: a.y, distance };
   });
-
 
   const flipCounts = new Map();
   decisions.forEach(d => {
@@ -308,7 +288,6 @@ function stepOnce() {
     }
   });
 
-
   decisions.forEach(d => {
     const a = d.auto;
     a.direction = d.newDir;
@@ -323,7 +302,6 @@ function stepOnce() {
     a.y = (a.y + gridSizeY) % gridSizeY;
   });
 
-
   grid.draw();
   autos.forEach(a => a.draw());
   steps++;
@@ -333,14 +311,29 @@ function stepOnce() {
 function decideNewDirection(i, x) {
   if(x < 4)
     i = (x + i) % 4;
-  else
+  else if(x < 8) {
     switch(x) {
       case 4: i = 0; break;
       case 5: i = 1; break;
       case 6: i = 2; break;
       case 7: i = 3; break;
     }
+  } else if(x == 8)
+    i = Math.floor(Math.random() * 4);
   return i;
+}
+
+function decideDistance(x) {
+  if(x > 0)
+    return x;
+  else if(x == 0)
+    return Math.floor(Math.random() * 2) + 1;
+}
+
+function decideColor(x) {
+  if(x == 7)
+    return Math.floor(Math.random() * 7);
+  return x;
 }
 
 // --- Build Control ---
