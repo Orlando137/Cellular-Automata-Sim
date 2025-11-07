@@ -435,9 +435,9 @@ randomAll.onclick = () => {
 
 saveRule.onclick = () => {
   if (notePad.value === '')
-    notePad.value = `${colorCode.value} | ${turnCode.value} | ${distanceCode.value}` + '\n - ';
+    notePad.value = `${showRule.textContent}` + '\n - ';
   else
-    notePad.value = notePad.value + '\n' + `${colorCode.value} | ${turnCode.value} | ${distanceCode.value}` + '\n - ';
+    notePad.value = notePad.value + '\n' + `${showRule.textContent}` + '\n - ';
 }
 
 implementRule.onclick = () => {
