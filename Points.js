@@ -19,6 +19,7 @@ const randomColor = document.getElementById('random-color');
 const randomTurn = document.getElementById('random-turn');
 const randomAll = document.getElementById('random-all');
 const randomDistance = document.getElementById('random-distance');
+const saveCurrent = document.getElementById('save-current');
 const saveRule = document.getElementById('save-rule');
 const showRule = document.getElementById('show-rule');
 const ruleCopy = document.getElementById('rule-copy');
@@ -431,6 +432,11 @@ randomAll.onclick = () => {
   randomColor.onclick();
   randomTurn.onclick();
   randomDistance.onclick();
+}
+
+saveCurrent.onclick = () => {
+  const currentRule = `${colorCode.value} | ${turnCode.value} | ${distanceCode.value}`;
+  showRule.textContent = currentRule;
 }
 
 saveRule.onclick = () => {
