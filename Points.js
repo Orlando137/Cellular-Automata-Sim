@@ -61,6 +61,7 @@ class Grid {
         case 4: this.grid[y][x] = decideColor(parseInt(auto.colorCode[4])); break;
         case 5: this.grid[y][x] = decideColor(parseInt(auto.colorCode[5])); break;
         case 6: this.grid[y][x] = decideColor(parseInt(auto.colorCode[6])); break;
+        case 7: this.grid[y][x] = decideColor(parseInt(auto.colorCode[7])); break;
       }
     }
   }
@@ -118,6 +119,7 @@ class Grid {
           case 4: ctx.fillStyle = 'rgb(0, 255, 255)'; break;   // Cyan
           case 5: ctx.fillStyle = 'rgb(0, 0, 255)'; break;   // Blue
           case 6: ctx.fillStyle = 'rgb(255, 0, 255)'; break;   // Magenta
+          case 7: ctx.fillStyle = 'rgb(255, 255, 255)'; break; // White
         }
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
@@ -267,6 +269,10 @@ function stepOnce() {
         newDir = decideNewDirection(a.direction, parseInt(a.turnCode[6]));
         distance = decideDistance(parseInt(a.distanceCode[6]));
         break;
+      case 7:
+        newDir = decideNewDirection(a.direction, parseInt(a.turnCode[7]));
+        distance = decideDistance(parseInt(a.distanceCode[7]));
+        break;
     }
     return { auto: a, newDir, x: a.x, y: a.y, distance };
   });
@@ -333,8 +339,8 @@ function decideDistance(x) {
 }
 
 function decideColor(x) {
-  if(x == 7)
-    return Math.floor(Math.random() * 7);
+  if(x == 8)
+    return Math.floor(Math.random() * 8);
   return x;
 }
 
@@ -382,7 +388,8 @@ bColor.onclick = () => {
     case 3: buColor = 4; bColor.textContent = 'cyan'; break;
     case 4: buColor = 5; bColor.textContent = 'blue'; break;
     case 5: buColor = 6; bColor.textContent = 'magenta'; break;
-    case 6: buColor = 0; bColor.textContent = 'black'; break;
+    case 6: buColor = 7; bColor.textContent = 'white'; break;
+    case 7: buColor = 0; bColor.textContent = 'black'; break;
   }
 }
 
@@ -401,9 +408,9 @@ save.onclick = () => {
 
 randomColor.onclick = () => {
   let newColorCode = '';
-  newColorCode += Math.floor(Math.random() * 6 + 1).toString();
-  for (let i = 0; i < 6; i++) {
-    const randColor = Math.floor(Math.random() * 7);
+  newColorCode += Math.floor(Math.random() * 7 + 1).toString();
+  for (let i = 0; i < 7; i++) {
+    const randColor = Math.floor(Math.random() * 8);
     newColorCode += randColor.toString();
   }
   colorCode.value = newColorCode;
@@ -412,7 +419,7 @@ randomColor.onclick = () => {
 randomTurn.onclick = () => {
   let newTurnCode = '';
   newTurnCode += Math.floor(Math.random() * 3 + 1).toString();
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 7; i++) {
     const randTurn = Math.floor(Math.random() * 4);
     newTurnCode += randTurn.toString();
   }
@@ -421,7 +428,7 @@ randomTurn.onclick = () => {
 
 randomDistance.onclick = () => {
   let newDistanceCode = '';
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 8; i++) {
     const randDistance = Math.floor(Math.random() * 2 + 1);
     newDistanceCode += randDistance.toString();
   }

@@ -68,7 +68,9 @@ input {
     border-radius: 0.25rem;
     background-color: #ffffff;
     cursor: text;
-    min-width: 0;
+    min-width: 80px;
+    max-width: 100%;
+    text-align: center;
 }
 
 .flex-grow {
