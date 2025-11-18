@@ -8,6 +8,7 @@ const bAutoCell = document.getElementById('bAuto-cell');
 const bKill = document.getElementById('bKill');
 const bDirection = document.getElementById('bDirection');
 const bColor = document.getElementById('bColor');
+const bCrosshair = document.getElementById('bCrosshair');
 const autoCount = document.getElementById('autoCount');
 const notePad = document.getElementById('paragraphInput');
 const canvas = document.getElementById('kansas');
@@ -33,6 +34,10 @@ var buAuto = true;
 var buDirection = 0;
 var buCell = false;
 var buColor = 0;
+var crosshairMode = false;
+var crosshairX = 0;
+var crosshairY = 0;
+var keysPressed = {};
 
 canvas.width = 600;
 canvas.height = 600;
@@ -312,6 +317,9 @@ function stepOnce() {
 
   grid.draw();
   autos.forEach(a => a.draw());
+  if (crosshairMode) {
+    drawCrosshair();
+  }
   steps++;
   stepCount.textContent = `${steps}`;
 }
@@ -461,5 +469,70 @@ implementRule.onclick = () => {
     turnCode.value = match[2];
     distanceCode.value = match[3];
     ruleCopy.value = '';
+  }
+}
+
+function drawCrosshair() {
+  ctx.fillStyle = 'rgb(255, 255, 255)';
+  ctx.fillRect(crosshairX * cellSize, crosshairY * cellSize, cellSize, cellSize);
+}
+
+function updateCrosshair() {
+  const speed = 1;
+  if (keysPressed['w'] || keysPressed['ArrowUp']) {
+    crosshairY = (crosshairY - speed + gridSizeY) % gridSizeY;
+  }
+  if (keysPressed['s'] || keysPressed['ArrowDown']) {
+    crosshairY = (crosshairY + speed) % gridSizeY;
+  }
+  if (keysPressed['a'] || keysPressed['ArrowLeft']) {
+    crosshairX = (crosshairX - speed + gridSizeX) % gridSizeX;
+  }
+  if (keysPressed['d'] || keysPressed['ArrowRight']) {
+    crosshairX = (crosshairX + speed) % gridSizeX;
+  }
+
+  grid.draw();
+  autos.forEach(a => a.draw());
+  if (crosshairMode) {
+    drawCrosshair();
+  }
+}
+
+document.addEventListener('keydown', (ev) => {
+  keysPressed[ev.key.toLowerCase()] = true;
+  
+  if (crosshairMode) {
+    // Update movement
+    updateCrosshair();
+    
+    // Check for number keys 0-7 to set tile color
+    if (ev.key >= '0' && ev.key <= '7') {
+      const colorValue = parseInt(ev.key);
+      grid.grid[crosshairY][crosshairX] = colorValue;
+      grid.draw();
+      autos.forEach(a => a.draw());
+      drawCrosshair();
+    }
+  }
+});
+
+document.addEventListener('keyup', (ev) => {
+  keysPressed[ev.key.toLowerCase()] = false;
+});
+
+bCrosshair.onclick = () => {
+  crosshairMode = !crosshairMode;
+  if (crosshairMode) {
+    bCrosshair.textContent = 'crosshair: on';
+    crosshairX = Math.floor(gridSizeX / 2);
+    crosshairY = Math.floor(gridSizeY / 2);
+    grid.draw();
+    autos.forEach(a => a.draw());
+    drawCrosshair();
+  } else {
+    bCrosshair.textContent = 'crosshair';
+    grid.draw();
+    autos.forEach(a => a.draw());
   }
 }
