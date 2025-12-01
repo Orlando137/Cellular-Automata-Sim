@@ -145,10 +145,14 @@ class Auto {
 
   draw() {
     switch (this.direction) {
-      case 0: ctx.fillStyle = 'rgb(51, 51, 51)'; break;
-      case 1: ctx.fillStyle = 'rgb(102, 102, 102)'; break;
-      case 2: ctx.fillStyle = 'rgb(153, 153, 153)'; break;
-      case 3: ctx.fillStyle = 'rgb(204, 204, 204)'; break;
+      case 0: ctx.fillStyle = 'rgb(26, 26, 26)'; break;
+      case 1: ctx.fillStyle = 'rgb(51, 51, 51)'; break;
+      case 2: ctx.fillStyle = 'rgb(77, 77, 77)'; break;
+      case 3: ctx.fillStyle = 'rgb(102, 102, 102)'; break;
+      case 4: ctx.fillStyle = 'rgb(146, 146, 146)'; break;
+      case 5: ctx.fillStyle = 'rgb(153, 153, 153)'; break;
+      case 6: ctx.fillStyle = 'rgb(179, 179, 179)'; break;
+      case 7: ctx.fillStyle = 'rgb(204, 204, 204)'; break;
     }
     ctx.fillRect(this.x * cellSize, this.y * cellSize, cellSize, cellSize);
   }
@@ -307,9 +311,13 @@ function stepOnce() {
     const distance = d.distance;
     switch (a.direction) {
       case 0: a.y -= distance; break;
-      case 1: a.x += distance; break;
-      case 2: a.y += distance; break;
-      case 3: a.x -= distance; break;
+      case 1: a.y -= distance; a.x += distance; break;
+      case 2: a.x += distance; break;
+      case 3: a.y += distance; a.x += distance; break;
+      case 4: a.y += distance; break;
+      case 5: a.y += distance; a.x -= distance; break;
+      case 6: a.x -= distance; break;
+      case 7: a.y -= distance; a.x -= distance; break;
     }
     a.x = (a.x + gridSizeX) % gridSizeX;
     a.y = (a.y + gridSizeY) % gridSizeY;
@@ -325,17 +333,9 @@ function stepOnce() {
 }
 
 function decideNewDirection(i, x) {
-  if(x < 4)
-    i = (x + i) % 4;
-  else if(x < 8) {
-    switch(x) {
-      case 4: i = 0; break;
-      case 5: i = 1; break;
-      case 6: i = 2; break;
-      case 7: i = 3; break;
-    }
-  } else if(x == 8)
-    i = Math.floor(Math.random() * 4);
+  i = (x + i) % 8;
+  if(x == 8)
+    i = Math.floor(Math.random() * 8);
   return i;
 }
 
@@ -426,9 +426,9 @@ randomColor.onclick = () => {
 
 randomTurn.onclick = () => {
   let newTurnCode = '';
-  newTurnCode += Math.floor(Math.random() * 3 + 1).toString();
+  newTurnCode += Math.floor(Math.random() * 7 + 1).toString();
   for (let i = 0; i < 7; i++) {
-    const randTurn = Math.floor(Math.random() * 4);
+    const randTurn = Math.floor(Math.random() * 8);
     newTurnCode += randTurn.toString();
   }
   turnCode.value = newTurnCode;
@@ -462,13 +462,20 @@ saveRule.onclick = () => {
 }
 
 implementRule.onclick = () => {
-  const ruleText = ruleCopy.value.trim();
-  const match = ruleText.match(/(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
+  let ruleText = ruleCopy.value.trim();
+  let match = ruleText.match(/(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
+  if (!match) {
+    const showText = showRule.textContent.trim();
+    const cleaned = showText.replace(/^rule:\s*/i, '');
+    match = cleaned.match(/(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
+  }
+
   if (match) {
     colorCode.value = match[1];
     turnCode.value = match[2];
     distanceCode.value = match[3];
-    ruleCopy.value = '';
+    // only clear the ruleCopy input if we used it
+    if (ruleText) ruleCopy.value = '';
   }
 }
 
