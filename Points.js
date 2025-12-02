@@ -19,6 +19,7 @@ const distanceCode = document.getElementById('distance-code');
 const randomColor = document.getElementById('random-color');
 const randomTurn = document.getElementById('random-turn');
 const randomAll = document.getElementById('random-all');
+const randomMode = document.getElementById('random-mode');
 const randomDistance = document.getElementById('random-distance');
 const saveCurrent = document.getElementById('save-current');
 const saveRule = document.getElementById('save-rule');
@@ -38,6 +39,8 @@ var crosshairMode = false;
 var crosshairX = 0;
 var crosshairY = 0;
 var keysPressed = {};
+
+var mode8 = true;
 
 canvas.width = 600;
 canvas.height = 600;
@@ -415,23 +418,29 @@ save.onclick = () => {
 }
 
 randomColor.onclick = () => {
-  let newColorCode = '';
-  newColorCode += Math.floor(Math.random() * 7 + 1).toString();
-  for (let i = 0; i < 7; i++) {
-    const randColor = Math.floor(Math.random() * 8);
-    newColorCode += randColor.toString();
-  }
-  colorCode.value = newColorCode;
+  colorCode.value = randomCode(true);
 }
 
 randomTurn.onclick = () => {
-  let newTurnCode = '';
-  newTurnCode += Math.floor(Math.random() * 7 + 1).toString();
-  for (let i = 0; i < 7; i++) {
-    const randTurn = Math.floor(Math.random() * 8);
-    newTurnCode += randTurn.toString();
+  turnCode.value = randomCode(false);
+}
+
+function randomCode(type) {
+  let newCode = '';
+  if(mode8 || type) {
+    newCode += Math.floor(Math.random() * 7 + 1).toString();
+    for (let i = 0; i < 7; i++) {
+      const rand = Math.floor(Math.random() * 8);
+      newCode += rand.toString();
+    }
+  } else {
+    newCode += (Math.floor(Math.random() * 3 + 1) * 2).toString();
+    for (let i = 0; i < 7; i++) {
+      const rand = Math.floor(Math.random() * 4) * 2;
+      newCode += rand.toString();
+    }
   }
-  turnCode.value = newTurnCode;
+  return newCode;
 }
 
 randomDistance.onclick = () => {
@@ -447,6 +456,11 @@ randomAll.onclick = () => {
   randomColor.onclick();
   randomTurn.onclick();
   randomDistance.onclick();
+}
+
+randomMode.onclick = () => {
+  randomMode.textContent = mode8 ? "4" : "8";
+  mode8 ? mode8 = false : mode8 = true;
 }
 
 saveCurrent.onclick = () => {
