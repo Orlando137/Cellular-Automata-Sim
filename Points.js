@@ -374,10 +374,10 @@ bAutoCell.onclick = () => {
 
 bDirection.onclick = () => {
   switch (buDirection) {
-    case 0: buDirection = 1; bDirection.textContent = 'east'; break;
-    case 1: buDirection = 2; bDirection.textContent = 'south'; break;
-    case 2: buDirection = 3; bDirection.textContent = 'west'; break;
-    case 3: buDirection = 0; bDirection.textContent = 'north'; break;
+    case 0: buDirection = 2; bDirection.textContent = 'east'; break;
+    case 2: buDirection = 4; bDirection.textContent = 'south'; break;
+    case 4: buDirection = 6; bDirection.textContent = 'west'; break;
+    case 6: buDirection = 0; bDirection.textContent = 'north'; break;
   }
 }
 
