@@ -339,6 +339,8 @@ function decideNewDirection(i, x) {
   i = (x + i) % 8;
   if(x == 8)
     i = Math.floor(Math.random() * 8);
+  if(x == 9)
+    i = 2 * Math.floor(Math.random() * 4) + (x % 2);
   return i;
 }
 
