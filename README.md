@@ -32,7 +32,6 @@ interested in emergent complexity.
 11. [Saving Images & Rules](#saving-images--rules)\
 12. [How to Extend the Project](#how-to-extend-the-project)\
 13. [Known Limitations](#known-limitations)\
-14. [License](#license)
 
 ------------------------------------------------------------------------
 
@@ -307,10 +306,3 @@ Ideas for expansion:
 -   Autos can visually overlap
 -   Rule codes must be 8 digits
 -   Notepad does not auto-save between sessions
-
-------------------------------------------------------------------------
-
-# **License**
-
-Add your preferred license here (e.g., MIT, Apache 2.0).\
-I can generate a license file for you if you want.
