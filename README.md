@@ -1,130 +1,316 @@
-# General Information
-**Automata create patterns from observing colors and reacting. Discover how the emerging complexity of cellular automation today.**
+# Cellular Automata Studio (CAS)
 
-## 🚀 Introduction  
-This project simulates "autos" that evolve over time and affect "tiles" based on the states of their environment and some rules. With this simulation, you can define how spefic automata interact, where and when they begin, as well as their orientation. explore how predictable local interactions generate complex global behavior.
+## **Abstract**
 
-## 🛠️ Built With  
-- HTML (front end)  
-- CSS (styling)  
-- JavaScript (logic & simulation)  
-- Web APIs (e.g., requestAnimationFrame, canvas)  
+**Cellular Automata Studio (CAS)** is an interactive, browser-based
+environment for exploring, visualizing, and experimenting with
+multi-state cellular automata. The tool provides a flexible
+rule-definition interface, real-time simulation controls, manual grid
+editing, crosshair-based precision editing, automatic and manual agent
+("auto") placement, and a notepad for storing custom rules.
 
-## 🧭 Features  
-- A grid of colored cells that evolve over discrete time steps.  
-- Rules that define changes in color, direction, and location.  
-- Real-time visualization in the browser (see `Points.html`, `Points.css`, `Points.js`).  
-- Easy to tweak parameters and observe emergent patterns.
+CAS supports **three rule systems**---color, turn, and distance---each
+represented by eight-digit codes mapped to cell colors. These give users
+deep control over the behavior of agents and the evolution of the grid.
+CAS is designed for learners, researchers, artists, and hobbyists
+interested in emergent complexity.
 
-## 📁 Getting Started  
-### Prerequisites  
-- A modern web browser (Google Chrome, Firefox, Edge, etc.)  
-- (Optional) A local web-server to serve files if you run into cross-origin issues (e.g., `python3 -m http.server`).  
+------------------------------------------------------------------------
 
-### Installation & Running  
-1. Clone this repository:  
-   ```bash
-   git clone https://github.com/Orlando137/Cellular-Automata-Sim.git
+# **Table of Contents**
 
-# Specific Information
-**Beyond general information about the field, understanding the UI is just as important**
+1.  [Abstract](#abstract)\
+2.  [Features](#features)\
+3.  [How to Access the Project](#how-to-access-the-project)\
+4.  [Getting Started](#getting-started)\
+5.  [User Interface Overview](#user-interface-overview)\
+6.  [Simulation Concepts](#simulation-concepts)\
+7.  [Controls and Instructions](#controls-and-instructions)\
+8.  [Rule System](#rule-system)\
+9.  [Grid Editing](#grid-editing)\
+10. [Crosshair Mode](#crosshair-mode)\
+11. [Saving Images & Rules](#saving-images--rules)\
+12. [How to Extend the Project](#how-to-extend-the-project)\
+13. [Known Limitations](#known-limitations)\
+14. [License](#license)
 
-## Left Side
-### Flow Control
-- Press `start` to begin simulating, or press `step`.
-- Press `pause` to stop simulating.
-- Press `play` to resume simulating, or `reset` to start over.
-- The number to the right counts how many timesteps have happened in the simulation.
+------------------------------------------------------------------------
 
-- When no autos exist, the simulation will not run.
+# **Features**
 
-### Build Control
-- The button that reads `north` can be pressed, and will cycle through the cardinal directions
-- When the farthest left button reads `auto`, auto building mode is enabled
-- The farthest left button can be toggled to read `cell`, which enables cell mode.
-- In cell mode, the middle button contols the color to be built in cell mode.
-- The `kill` button removes all autos on the screen.
+-   Interactive grid-based cellular automata simulation
+-   Multiple autonomous agents ("autos")\
+-   Independent rule codes for:
+    -   **Color transformation**
+    -   **Direction change**
+    -   **Movement distance**
+-   Random rule generation (4-mode and 8-mode)
+-   Manual or automatic placement of autos
+-   Cell painting mode for constructing initial conditions
+-   Crosshair mode for keyboard-based precision editing
+-   Step-by-step execution or continuous play
+-   Rule saving, previewing, implementing, and notepad storage
+-   Export simulation canvas as a PNG
+-   Fully client-side; no installation required
 
-### Notepad
-The notepad is there simply for the convienence of the user. I recommend using it to store good rules.
+------------------------------------------------------------------------
 
-## Right Side
-### Saving the Graph
-- Enter a name into the graph, then press the `save` button.
-- The state of the central canvas is saved as a PNG.file.
+# **How to Access the Project**
 
-### Control
-- `color code` determines how an auto changes the tile color.
-- The position of each digit represents the initial color.
-- The value of each digit represents the final color.
+### **Method 1 --- Open the HTML File**
 
-- `turn code` determines how an auto changes direction.
-- The position of each digit represents the initial color.
-- Values 0 through 3 determine how many right angle clockwise turns the auto makes.
-- Values 4 through 7 determine cardinal directions, north through west.
+Simply open **CAS.html** in your web browser.
 
-- `distance code` determines how an auto changes loctaion.
-- The position of each digit represents the initial color.
-- The value of each digit represents how many tiles the auto will move.
+### **Method 2 --- Run a Local Server**
 
-### Random Rules
-- `color` generates a valid random code
-- It will never begin with 0.
+Some browsers restrict local file access; a server is recommended.
 
-- `turn` generates a valid turn code.
-- It will never begin with 0.
-- It will only contain values from 0 to 3.
+**Python:**
 
-- `distance` generates a valid distance code.
-- All values will be either 1 or 2.
+``` bash
+python3 -m http.server
+```
 
-- `all` has the functionality of `color`, `turn`, and `distance` combined.
+Visit:
 
-- NOTE: Pressing these buttons directly change the input field of the codes!
+    http://localhost:8000
 
-### Finding Rules
-Right click on an auto to display the rule in `rule:`.
+### **Method 3 --- Deploy Online**
 
-### Entering Rules
-- Copy the desired rule IN THE DEFUALT FORMAT, then press `go`.
+Upload to any static hosting service:
 
-- NOTE: Pressing `go` directly ghanges the input field of the codes!
+-   GitHub Pages\
+-   Netlify\
+-   Vercel\
+-   Cloudflare Pages
 
-## Graph
-- In `auto` mode, clicking on a tile will add an auto with the given direction.
-- In `cell` mode, clicking on a tile change the cell's color to the given color.
-- In any mode, right-clicking on an auto will find that auto's rules
+No backend required.
 
-- At start or upon reset, an auto will be put in the middle of the graph with the current rule.
+------------------------------------------------------------------------
 
-## 📜 Conventions
-- An auto's rules are final and are set at instantiation.
-- The auto reads the tile, then uses that to turn THEN move.
-- Black, red, yellow, green, cyan, blue, and magenta are represented as 0 ... 6.
-- When multiple autos are on the same tile, the tile will not change color when they move.
+# **Getting Started**
 
-# 💡 Tips
-## Graph
-- Try updating the text in `rule: ` by clicking left, right, left on the graph.
-- If an auto gets in a loop, then try going into `cell mode` and adding black to the loop.
+1.  Open **CAS.html** in your browser.
+2.  Use the **Flow Control** panel to start or step through the
+    simulation.
+3.  Add autos or paint cells using the **Build Control** panel.
+4.  Modify rule codes in the **Rule Panel** to change automata behavior.
+5.  Watch emergent patterns evolve on the canvas.
 
-## Rules
-- Try making a system to qualitively describe the behavior of an auto
-- When a value is the same as it's index in `color code`, it can lead to weird things.
+------------------------------------------------------------------------
 
-## Behaviors
-Here is a list of some behaviors you may encounter:
-- Infinite loops
-- Highways
-- Psuedo chaos
-- Diamonds
-- "Solid" structure
-- "Porus" structure
-- Border colors
-- Internal colors
-- Solid internal color
-- Mixed internal color
-- Doublesided highways
-- Time-keepers
-- Slow growth
-- Fast growth
+# **User Interface Overview**
+
+### **Left Panel --- Flow & Build Controls**
+
+-   Start, Reset, Pause, Step
+-   Auto placement vs. cell painting mode
+-   Change auto direction
+-   Kill all autos
+-   Cycle paint colors
+-   Rule notepad
+
+### **Center --- Canvas**
+
+-   Displays the grid and all autos
+-   Click actions vary depending on mode:
+    -   Add/remove autos
+    -   Paint cells
+    -   Right-click an auto to view its rule set
+
+### **Right Panel --- Rule Controls**
+
+-   Edit color, turn, and distance codes
+-   Generate random rules
+-   Save/preview rule sets
+-   Export canvas as PNG
+-   Implement rules from text input
+
+------------------------------------------------------------------------
+
+# **Simulation Concepts**
+
+## **Autos**
+
+Autos execute the following sequence:
+
+1.  Read current cell's color\
+2.  Apply turn code to change direction\
+3.  Apply distance code to determine movement\
+4.  Flip/transform the cell using the color code\
+5.  Move to a new cell (with wrapping around edges)
+
+## **Cells**
+
+Cells display color values **0--7**:
+
+  Value   Color
+  ------- ---------
+  0       Black
+  1       Red
+  2       Yellow
+  3       Green
+  4       Cyan
+  5       Blue
+  6       Magenta
+  7       White
+
+------------------------------------------------------------------------
+
+# **Controls and Instructions**
+
+## **Flow Controls**
+
+  Button           Action
+  ---------------- ----------------------------------
+  **Start**        Begins the simulation
+  **Reset**        Resets grid, autos, and counters
+  **Pause/Play**   Toggles simulation
+  **Step**         Performs exactly one update
+
+------------------------------------------------------------------------
+
+## **Build Controls**
+
+### **Modes**
+
+-   **Auto mode:** Click to add/remove autos\
+-   **Cell mode:** Click to paint cells
+
+Toggle using **auto / cell** button.
+
+### **Direction Button**
+
+Cycles through:
+
+    North → East → South → West
+
+### **Kill**
+
+Removes all autos.
+
+### **Paint Color**
+
+Cycles through colors 0--7 when in cell mode.
+
+------------------------------------------------------------------------
+
+# **Rule System**
+
+Each rule is represented by an **8-digit code**, where each digit
+corresponds to the behavior when an auto is standing on a cell of that
+color.
+
+Example:
+
+    00000000 | 02460246 | 11112222
+
+## **Color Code (0--7, or 8)**
+
+Controls cell transformation.
+
+-   `0–7` → Set cell to that color
+-   `8` → Random color (0--7)
+
+## **Turn Code (0--9)**
+
+Controls the auto's rotation.
+
+-   `0–7` → Add this value to direction (mod 8)\
+-   `8` → Random direction (0--7)\
+-   `9` → Special even-only random rotation
+
+## **Distance Code (0--9)**
+
+Controls how far the auto moves.
+
+-   `1+` → Move exactly that many cells\
+-   `0` → Random distance of 1--2
+
+------------------------------------------------------------------------
+
+# **Grid Editing**
+
+## **Cell Mode**
+
+-   Click to paint cells
+-   Cycle color with the **color** button
+-   Useful for drawing patterns or constructing initial states
+
+## **Auto Mode**
+
+-   Click to add/remove autos
+-   Right-click an auto to view its rule codes
+
+------------------------------------------------------------------------
+
+# **Crosshair Mode**
+
+A precision editing mode.
+
+### **Enable**
+
+Click **crosshair**.
+
+### **Controls**
+
+-   **W / A / S / D** or arrow keys → Move crosshair\
+-   **0--7** → Paint the current cell\
+-   Current cell is highlighted for visibility
+
+------------------------------------------------------------------------
+
+# **Saving Images & Rules**
+
+## **Save Canvas as PNG**
+
+1.  Enter a graph name\
+2.  Click **save**\
+3.  PNG downloads automatically
+
+## **Save Current Rule**
+
+Displays the active rule set.
+
+## **Add Rule to Notepad**
+
+Stores rule text for later reference.
+
+## **Implement A Rule**
+
+Paste rule text like:
+
+    00000000 | 12345678 | 11111111
+
+CAS automatically loads it into the rule fields.
+
+------------------------------------------------------------------------
+
+# **How to Extend the Project**
+
+Ideas for expansion:
+
+-   Add more than 8 color states
+-   Brush tools (lines, squares, circles)
+-   Trail/heatmap visualization
+-   JSON rule import/export
+-   Simulation speed control
+-   Multi-layer rule systems
+-   Auto history tracking
+
+------------------------------------------------------------------------
+
+# **Known Limitations**
+
+-   No undo/redo
+-   Fixed canvas size (600×600 px)
+-   Autos can visually overlap
+-   Rule codes must be 8 digits
+-   Notepad does not auto-save between sessions
+
+------------------------------------------------------------------------
+
+# **License**
+
+Add your preferred license here (e.g., MIT, Apache 2.0).\
+I can generate a license file for you if you want.
