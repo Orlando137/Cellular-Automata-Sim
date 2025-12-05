@@ -5,7 +5,86 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>CAS</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="Points.css">
+        <style>
+            body {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                gap: 20px;
+                font-family: sans-serif;
+                background-color: #323232;
+            }
+        
+            h1 {
+                color: rgb(255, 255, 255);
+                font-size: 18px;
+            }
+        
+            #control {
+                display: flex;
+                flex-direction: column;
+                height: 500px;
+                width: 300px;
+                border: 2px solid #C8C8C8;
+                background-color: black;
+                padding: 10px;
+            }
+        
+            .button {
+                padding: 0rem 0.25rem;
+                border: 1px solid #767676;
+                border-radius: 0.25rem;
+                background-color: #ffffff;
+                cursor: pointer;
+            }
+        
+            #stepCount {
+                color: white;
+            }
+        
+            textarea {
+                resize: none;
+                width: 100%;
+                height: 300px;
+                background-color: #ffffff;
+                border: 1px solid #767676;
+                border-radius: 0.25rem;
+                padding: 0.25rem;
+            }
+        
+            canvas {
+                border: 2px solid #C8C8C8;
+                background-color: black;
+            }
+        
+            #rule {
+                display: flex;
+                flex-direction: column;
+                height: 500px;
+                width: 300px;
+                border: 2px solid #C8C8C8;
+                background-color: black;
+                padding: 10px;
+            }
+        
+            input {
+                padding: 0rem 0.25rem;
+                border: 1px solid #767676;
+                border-radius: 0.25rem;
+                background-color: #ffffff;
+                cursor: text;
+                min-width: 80px;
+                max-width: 100%;
+                text-align: center;
+            }
+        
+            .flex-grow {
+                flex-grow: 1;
+            }
+        </style>
         <link rel="icon" type="image/png" href="icon.png">
     </head>
     <body>
@@ -78,6 +157,568 @@
                 <input id="rule-copy" class="input flex-grow text-black" placeholder="Enter rule to copy">
                 <button id="implement-rule" class="button whitespace-nowrap">go</button>
             </div>
-        <script src="Points.js"></script>
+        <script>
+            // ---  Initial Constants + Variables ---
+            const startReset = document.getElementById('start-reset');
+            const pausePlay = document.getElementById('pause-play');
+            const save = document.getElementById('save');
+            const step = document.getElementById('step');
+            const stepCount = document.getElementById('stepCount');
+            const bAutoCell = document.getElementById('bAuto-cell');
+            const bKill = document.getElementById('bKill');
+            const bDirection = document.getElementById('bDirection');
+            const bColor = document.getElementById('bColor');
+            const bCrosshair = document.getElementById('bCrosshair');
+            const autoCount = document.getElementById('autoCount');
+            const notePad = document.getElementById('paragraphInput');
+            const canvas = document.getElementById('kansas');
+            const graphName = document.getElementById('graph-name');
+            const colorCode = document.getElementById('color-code');
+            const turnCode = document.getElementById('turn-code');
+            const distanceCode = document.getElementById('distance-code');
+            const randomColor = document.getElementById('random-color');
+            const randomTurn = document.getElementById('random-turn');
+            const randomAll = document.getElementById('random-all');
+            const randomMode = document.getElementById('random-mode');
+            const randomDistance = document.getElementById('random-distance');
+            const saveCurrent = document.getElementById('save-current');
+            const saveRule = document.getElementById('save-rule');
+            const showRule = document.getElementById('show-rule');
+            const ruleCopy = document.getElementById('rule-copy');
+            const implementRule = document.getElementById('implement-rule');
+            const ctx = canvas.getContext('2d');
+            const cellSize = 4;
+            var started = false;
+            var playing = false;
+            var steps = 0;
+            var buAuto = true;
+            var buDirection = 0;
+            var buCell = false;
+            var buColor = 0;
+            var crosshairMode = false;
+            var crosshairX = 0;
+            var crosshairY = 0;
+            var keysPressed = {};
+
+            var mode8 = true;
+
+            canvas.width = 600;
+            canvas.height = 600;
+            const gridSizeX = Math.floor(canvas.width / cellSize);
+            const gridSizeY = Math.floor(canvas.height / cellSize);
+
+            // --- Grid Class ---
+            class Grid {
+              constructor(width, height) {
+                this.width = width;
+                this.height = height;
+                this.grid = this.createGrid();
+              }
+          
+              createGrid() {
+                return Array(this.height).fill(null).map(() => Array(this.width).fill(0));
+              }
+          
+              flipCell(x, y, auto) {
+                if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+                  switch (this.grid[y][x]) {
+                    case 0: this.grid[y][x] = decideColor(parseInt(auto.colorCode[0])); break;
+                    case 1: this.grid[y][x] = decideColor(parseInt(auto.colorCode[1])); break;
+                    case 2: this.grid[y][x] = decideColor(parseInt(auto.colorCode[2])); break;
+                    case 3: this.grid[y][x] = decideColor(parseInt(auto.colorCode[3])); break;
+                    case 4: this.grid[y][x] = decideColor(parseInt(auto.colorCode[4])); break;
+                    case 5: this.grid[y][x] = decideColor(parseInt(auto.colorCode[5])); break;
+                    case 6: this.grid[y][x] = decideColor(parseInt(auto.colorCode[6])); break;
+                    case 7: this.grid[y][x] = decideColor(parseInt(auto.colorCode[7])); break;
+                  }
+                }
+              }
+          
+              getCell(x, y) {
+                if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+                  return this.grid[y][x];
+                }
+                return null;
+              }
+          
+              cellAtCanvasPoint(clientX, clientY) {
+                const rect = canvas.getBoundingClientRect();
+                const cssX = clientX - rect.left;
+                const cssY = clientY - rect.top;
+            
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+            
+                const canvasX = Math.floor(cssX * scaleX);
+                const canvasY = Math.floor(cssY * scaleY);
+            
+                const gridX = Math.floor(canvasX / cellSize);
+                const gridY = Math.floor(canvasY / cellSize);
+            
+            
+                if (gridX >= 0 && gridX < this.width && gridY >= 0 && gridY < this.height) {
+                  return { x: gridX, y: gridY, value: this.getCell(gridX, gridY) };
+                }
+                return null;
+              }
+          
+              enableClickSelection(callback) {
+                const fCell = (ev) => {
+                  ev.preventDefault(); // Prevent default right-click menu
+                  const cell = this.cellAtCanvasPoint(ev.clientX, ev.clientY);
+                  callback(cell, ev);
+                };
+                canvas.addEventListener('click', fCell);
+                canvas.addEventListener('contextmenu', fCell);
+                return () => {
+                  canvas.removeEventListener('click', fCell);
+                  canvas.removeEventListener('contextmenu', fCell);
+                };
+              }
+          
+              draw() {
+                for (let y = 0; y < this.height; y++) {
+                  for (let x = 0; x < this.width; x++) {
+                    switch (this.getCell(x, y)) {
+                      case 0: ctx.fillStyle = 'rgb(0, 0, 0)'; break;       // Black
+                      case 1: ctx.fillStyle = 'rgb(255, 0, 0)'; break;     // Red
+                      case 2: ctx.fillStyle = 'rgb(255, 255, 0)'; break;     // Yellow
+                      case 3: ctx.fillStyle = 'rgb(0, 255, 0)'; break;     // Green
+                      case 4: ctx.fillStyle = 'rgb(0, 255, 255)'; break;   // Cyan
+                      case 5: ctx.fillStyle = 'rgb(0, 0, 255)'; break;   // Blue
+                      case 6: ctx.fillStyle = 'rgb(255, 0, 255)'; break;   // Magenta
+                      case 7: ctx.fillStyle = 'rgb(255, 255, 255)'; break; // White
+                    }
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                  }
+                }
+              }
+            }
+
+            // --- Auto Class ---
+            class Auto {
+              constructor(x, y, d) {
+                this.x = x;
+                this.y = y;
+                this.direction = d;
+                this.colorCode = colorCode.value;
+                this.turnCode = turnCode.value;
+                this.distanceCode = distanceCode.value;
+              }
+          
+              draw() {
+                switch (this.direction) {
+                  case 0: ctx.fillStyle = 'rgb(26, 26, 26)'; break;
+                  case 1: ctx.fillStyle = 'rgb(51, 51, 51)'; break;
+                  case 2: ctx.fillStyle = 'rgb(77, 77, 77)'; break;
+                  case 3: ctx.fillStyle = 'rgb(102, 102, 102)'; break;
+                  case 4: ctx.fillStyle = 'rgb(146, 146, 146)'; break;
+                  case 5: ctx.fillStyle = 'rgb(153, 153, 153)'; break;
+                  case 6: ctx.fillStyle = 'rgb(179, 179, 179)'; break;
+                  case 7: ctx.fillStyle = 'rgb(204, 204, 204)'; break;
+                }
+                ctx.fillRect(this.x * cellSize, this.y * cellSize, cellSize, cellSize);
+              }
+            }
+
+            const grid = new Grid(gridSizeX, gridSizeY);
+            let autos = [ new Auto(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
+            autos.forEach(a => a.draw());
+
+            grid.enableClickSelection((cell, ev) => {
+              if (!cell) return;
+            
+              // Handle right click to show Auto rules
+              if (ev.type === 'contextmenu') {
+                const clickedAuto = autos.find(a => a.x === cell.x && a.y === cell.y);
+                if (clickedAuto) {
+                  showRule.textContent = `${clickedAuto.colorCode} | ${clickedAuto.turnCode} | ${clickedAuto.distanceCode}`;
+                  return;
+                }
+              }
+          
+              // Handle left click for normal interactions
+              if (buCell) {
+                grid.grid[cell.y][cell.x] = buColor;
+                grid.draw();
+                autos.forEach(a => a.draw());
+              } else {
+                const beforeCount = autos.length;
+                autos = autos.filter(a => !(a.x === cell.x && a.y === cell.y));
+                const afterCount = autos.length;
+                if (afterCount === beforeCount) {
+                  // No autos were removed -> add a new auto at the clicked location
+                  const newAuto = new Auto(cell.x, cell.y, buDirection);
+                  autos.push(newAuto);
+                }
+            
+                grid.draw();
+                autos.forEach(a => a.draw());
+                autoCount.textContent = `${autos.length}`;
+              }
+            });
+
+            function animate() {
+              stepOnce();
+              if (playing)
+                requestAnimationFrame(animate);
+            }
+
+            // --- Flow Control ---
+            startReset.onclick = () => {
+              if (started) {
+                startReset.textContent = 'start';
+                steps = 0;
+                stepCount.textContent = `${steps}`;
+                autoCount.textContent = `1`;
+                started = false;
+                playing = false;
+                grid.grid = grid.createGrid();
+                autos = [ new Auto(Math.floor(gridSizeX / 2), Math.floor(gridSizeY / 2), 0) ];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                autos.forEach(a => a.draw());
+                requestAnimationFrame
+                pausePlay.classList.add('hidden');
+              } else {
+                startReset.textContent = 'reset';
+                pausePlay.textContent = 'pause';
+                started = true;
+                playing = true;
+                animate();
+                pausePlay.classList.remove('hidden');
+                startReset.classList.add('hidden');
+              }
+            }
+
+            pausePlay.onclick = () => {
+              pausePlay.textContent = playing ? 'play' : 'pause';
+              playing ? playing = false : playing = true;
+              if (playing) {
+                animate();
+                startReset.classList.add('hidden');
+              } else {
+                startReset.classList.remove('hidden');
+              }
+            };
+
+            step.onclick = () => {
+              stepOnce();
+            }
+
+            function stepOnce() {
+              if (autos.length === 0) return;
+            
+              const decisions = autos.map(a => {
+                const cellColor = grid.getCell(a.x, a.y);
+                let newDir;
+                let distance;
+                switch (cellColor) {
+                  case 0: 
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[0]));
+                    distance = decideDistance(parseInt(a.distanceCode[0]));
+                    break;
+                  case 1:
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[1]));
+                    distance = decideDistance(parseInt(a.distanceCode[1]));
+                    break;
+                  case 2:
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[2]));
+                    distance = decideDistance(parseInt(a.distanceCode[2]));
+                    break;
+                  case 3:
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[3]));
+                    distance = decideDistance(parseInt(a.distanceCode[3]));
+                    break;
+                  case 4:
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[4]));
+                    distance = decideDistance(parseInt(a.distanceCode[4]));
+                    break;
+                  case 5:
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[5]));
+                    distance = decideDistance(parseInt(a.distanceCode[5]));
+                    break;
+                  case 6:
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[6]));
+                    distance = decideDistance(parseInt(a.distanceCode[6]));
+                    break;
+                  case 7:
+                    newDir = decideNewDirection(a.direction, parseInt(a.turnCode[7]));
+                    distance = decideDistance(parseInt(a.distanceCode[7]));
+                    break;
+                }
+                return { auto: a, newDir, x: a.x, y: a.y, distance };
+              });
+          
+              const flipCounts = new Map();
+              decisions.forEach(d => {
+                const key = `${d.x},${d.y}`; // No clue how this works
+                flipCounts.set(key, (flipCounts.get(key) || 0) + 1);
+              });
+              // Keep track of which auto was last to visit each cell
+              const lastAutoAtCell = new Map();
+              decisions.forEach(d => {
+                lastAutoAtCell.set(`${d.x},${d.y}`, d.auto);
+              });
+          
+              flipCounts.forEach((count, key) => {
+                if (count % 2 === 1) {
+                  const [sx, sy] = key.split(',').map(Number);
+                  const auto = lastAutoAtCell.get(key);
+                  grid.flipCell(sx, sy, auto);
+                }
+              });
+          
+              decisions.forEach(d => {
+                const a = d.auto;
+                a.direction = d.newDir;
+                const distance = d.distance;
+                switch (a.direction) {
+                  case 0: a.y -= distance; break;
+                  case 1: a.y -= distance; a.x += distance; break;
+                  case 2: a.x += distance; break;
+                  case 3: a.y += distance; a.x += distance; break;
+                  case 4: a.y += distance; break;
+                  case 5: a.y += distance; a.x -= distance; break;
+                  case 6: a.x -= distance; break;
+                  case 7: a.y -= distance; a.x -= distance; break;
+                }
+                a.x = (a.x + gridSizeX) % gridSizeX;
+                a.y = (a.y + gridSizeY) % gridSizeY;
+              });
+          
+              grid.draw();
+              autos.forEach(a => a.draw());
+              if (crosshairMode) {
+                drawCrosshair();
+              }
+              steps++;
+              stepCount.textContent = `${steps}`;
+            }
+
+            function decideNewDirection(i, x) {
+              i = (x + i) % 8;
+              if(x == 8)
+                i = Math.floor(Math.random() * 8);
+              if(x == 9)
+                i = 2 * Math.floor(Math.random() * 4) + (x % 2);
+              return i;
+            }
+
+            function decideDistance(x) {
+              if(x > 0)
+                return x;
+              else if(x == 0)
+                return Math.floor(Math.random() * 2) + 1;
+            }
+
+            function decideColor(x) {
+              if(x == 8)
+                return Math.floor(Math.random() * 8);
+              return x;
+            }
+
+            // --- Build Control ---
+
+
+            bAutoCell.onclick = () => {
+              buCell ? buCell = false : buCell = true;
+              buAuto ? buAuto = false : buAuto = true;
+              if (buAuto) {
+                bAutoCell.textContent = 'auto';
+                bDirection.classList.remove('hidden');
+                bKill.classList.remove('hidden');
+                bColor.classList.add('hidden');
+              } else {
+                bAutoCell.textContent = 'cell';
+                bDirection.classList.add('hidden');
+                bKill.classList.add('hidden');
+                bColor.classList.remove('hidden');
+              }
+            }
+
+
+            bDirection.onclick = () => {
+              switch (buDirection) {
+                case 0: buDirection = 2; bDirection.textContent = 'east'; break;
+                case 2: buDirection = 4; bDirection.textContent = 'south'; break;
+                case 4: buDirection = 6; bDirection.textContent = 'west'; break;
+                case 6: buDirection = 0; bDirection.textContent = 'north'; break;
+              }
+            }
+
+            bKill.onclick = () => {
+              autos.length = 0;
+              grid.draw();
+              autoCount.textContent = `0`;
+            }
+
+
+            bColor.onclick = () => {
+              switch (buColor) {
+                case 0: buColor = 1; bColor.textContent = 'red'; break;
+                case 1: buColor = 2; bColor.textContent = 'yellow'; break;
+                case 2: buColor = 3; bColor.textContent = 'green'; break;
+                case 3: buColor = 4; bColor.textContent = 'cyan'; break;
+                case 4: buColor = 5; bColor.textContent = 'blue'; break;
+                case 5: buColor = 6; bColor.textContent = 'magenta'; break;
+                case 6: buColor = 7; bColor.textContent = 'white'; break;
+                case 7: buColor = 0; bColor.textContent = 'black'; break;
+              }
+            }
+
+            // --- Rule Control ---
+            save.onclick = () => {
+              if (!graphName.value) {
+                alert('Please enter a graph name before saving.');
+                return;
+              } else {
+                const link = document.createElement("a");
+                link.download = graphName.value + ".png";
+                link.href = canvas.toDataURL();
+                link.click();
+              }
+            }
+
+            randomColor.onclick = () => {
+              colorCode.value = randomCode(true);
+            }
+
+            randomTurn.onclick = () => {
+              turnCode.value = randomCode(false);
+            }
+
+            function randomCode(type) {
+              let newCode = '';
+              if(mode8 || type) {
+                newCode += Math.floor(Math.random() * 7 + 1).toString();
+                for (let i = 0; i < 7; i++) {
+                  const rand = Math.floor(Math.random() * 8);
+                  newCode += rand.toString();
+                }
+              } else {
+                newCode += (Math.floor(Math.random() * 3 + 1) * 2).toString();
+                for (let i = 0; i < 7; i++) {
+                  const rand = Math.floor(Math.random() * 4) * 2;
+                  newCode += rand.toString();
+                }
+              }
+              return newCode;
+            }
+
+            randomDistance.onclick = () => {
+              let newDistanceCode = '';
+              for (let i = 0; i < 8; i++) {
+                const randDistance = Math.floor(Math.random() * 2 + 1);
+                newDistanceCode += randDistance.toString();
+              }
+              distanceCode.value = newDistanceCode;
+            }
+
+            randomAll.onclick = () => {
+              randomColor.onclick();
+              randomTurn.onclick();
+              randomDistance.onclick();
+            }
+
+            randomMode.onclick = () => {
+              randomMode.textContent = mode8 ? "4" : "8";
+              mode8 ? mode8 = false : mode8 = true;
+            }
+
+            saveCurrent.onclick = () => {
+              const currentRule = `${colorCode.value} | ${turnCode.value} | ${distanceCode.value}`;
+              showRule.textContent = currentRule;
+            }
+
+            saveRule.onclick = () => {
+              if (notePad.value === '')
+                notePad.value = `${showRule.textContent}` + '\n - ';
+              else
+                notePad.value = notePad.value + '\n' + `${showRule.textContent}` + '\n - ';
+            }
+
+            implementRule.onclick = () => {
+              let ruleText = ruleCopy.value.trim();
+              let match = ruleText.match(/(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
+              if (!match) {
+                const showText = showRule.textContent.trim();
+                const cleaned = showText.replace(/^rule:\s*/i, '');
+                match = cleaned.match(/(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)/);
+              }
+          
+              if (match) {
+                colorCode.value = match[1];
+                turnCode.value = match[2];
+                distanceCode.value = match[3];
+                // only clear the ruleCopy input if we used it
+                if (ruleText) ruleCopy.value = '';
+              }
+            }
+
+            function drawCrosshair() {
+              ctx.fillStyle = 'rgb(255, 255, 255)';
+              ctx.fillRect(crosshairX * cellSize, crosshairY * cellSize, cellSize, cellSize);
+            }
+
+            function updateCrosshair() {
+              const speed = 1;
+              if (keysPressed['w'] || keysPressed['ArrowUp']) {
+                crosshairY = (crosshairY - speed + gridSizeY) % gridSizeY;
+              }
+              if (keysPressed['s'] || keysPressed['ArrowDown']) {
+                crosshairY = (crosshairY + speed) % gridSizeY;
+              }
+              if (keysPressed['a'] || keysPressed['ArrowLeft']) {
+                crosshairX = (crosshairX - speed + gridSizeX) % gridSizeX;
+              }
+              if (keysPressed['d'] || keysPressed['ArrowRight']) {
+                crosshairX = (crosshairX + speed) % gridSizeX;
+              }
+          
+              grid.draw();
+              autos.forEach(a => a.draw());
+              if (crosshairMode) {
+                drawCrosshair();
+              }
+            }
+
+            document.addEventListener('keydown', (ev) => {
+              keysPressed[ev.key.toLowerCase()] = true;
+            
+              if (crosshairMode) {
+                // Update movement
+                updateCrosshair();
+
+                // Check for number keys 0-7 to set tile color
+                if (ev.key >= '0' && ev.key <= '7') {
+                  const colorValue = parseInt(ev.key);
+                  grid.grid[crosshairY][crosshairX] = colorValue;
+                  grid.draw();
+                  autos.forEach(a => a.draw());
+                  drawCrosshair();
+                }
+              }
+            });
+
+            document.addEventListener('keyup', (ev) => {
+              keysPressed[ev.key.toLowerCase()] = false;
+            });
+
+            bCrosshair.onclick = () => {
+              crosshairMode = !crosshairMode;
+              if (crosshairMode) {
+                bCrosshair.textContent = 'crosshair: on';
+                crosshairX = Math.floor(gridSizeX / 2);
+                crosshairY = Math.floor(gridSizeY / 2);
+                grid.draw();
+                autos.forEach(a => a.draw());
+                drawCrosshair();
+              } else {
+                bCrosshair.textContent = 'crosshair';
+                grid.draw();
+                autos.forEach(a => a.draw());
+              }
+            }
+        </script>
     </body>
 </html>
