@@ -173,7 +173,7 @@ Cells display color values **0--7**:
 
 ### **Modes**
 
--   **Auto mode:** Click to add/remove autos\
+-   **Auto mode:** Click to add/remove autos
 -   **Cell mode:** Click to paint cells
 
 Toggle using **auto / cell** button.
@@ -202,9 +202,9 @@ color.
 
 Example:
 
-    00000000 | 02460246 | 11112222
+    12345670 | 02461357 | 11212122
 
-## **Color Code (0--7, or 8)**
+## **Color Code (0--8)**
 
 Controls cell transformation.
 
@@ -215,15 +215,15 @@ Controls cell transformation.
 
 Controls the auto's rotation.
 
--   `0–7` → Add this value to direction (mod 8)\
--   `8` → Random direction (0--7)\
+-   `0–7` → Add this value to direction (mod 8)
+-   `8` → Random direction (0--7)
 -   `9` → Special even-only random rotation
 
 ## **Distance Code (0--9)**
 
 Controls how far the auto moves.
 
--   `1+` → Move exactly that many cells\
+-   `1+` → Move exactly that many cells
 -   `0` → Random distance of 1--2
 
 ------------------------------------------------------------------------
@@ -263,8 +263,8 @@ Click **crosshair**.
 
 ## **Save Canvas as PNG**
 
-1.  Enter a graph name\
-2.  Click **save**\
+1.  Enter a graph name
+2.  Click **save**
 3.  PNG downloads automatically
 
 ## **Save Current Rule**
@@ -279,23 +279,9 @@ Stores rule text for later reference.
 
 Paste rule text like:
 
-    00000000 | 12345678 | 11111111
+    12345670 | 02461357 | 11212122
 
 CAS automatically loads it into the rule fields.
-
-------------------------------------------------------------------------
-
-# **How to Extend the Project**
-
-Ideas for expansion:
-
--   Add more than 8 color states
--   Brush tools (lines, squares, circles)
--   Trail/heatmap visualization
--   JSON rule import/export
--   Simulation speed control
--   Multi-layer rule systems
--   Auto history tracking
 
 ------------------------------------------------------------------------
 
@@ -304,5 +290,6 @@ Ideas for expansion:
 -   No undo/redo
 -   Fixed canvas size (600×600 px)
 -   Autos can visually overlap
+-   Multiple autos cannot change a tile at once
 -   Rule codes must be 8 digits
 -   Notepad does not auto-save between sessions
